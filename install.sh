@@ -270,7 +270,17 @@ else
     echo "Done: $summary."
 fi
 
-if [ $backed_up -gt 0 ]; then
+# Did anything get displaced this run?
+#
+# The $backed_up counter is not enough: packages with their own install.sh run
+# as subprocesses, so their backups never reach it. That is not a corner case
+# -- every Linux distribution ships a ~/.bashrc, so the first install on one
+# displaces a real file entirely inside shell/install.sh.
+#
+# Matching this run's exact suffix instead catches both, and cannot be fooled
+# by backups left over from an earlier run. -print -quit stops at the first
+# hit, so this costs a few milliseconds.
+if [ -n "$(find ~/.[^.]* -maxdepth 3 -name "*.$DOTFILES_BAK_SUFFIX" -print -quit 2>/dev/null)" ]; then
     # Searching only $HOME's dot entries is fast and identical on every
     # platform: it never descends into ~/Library, which on macOS is slow and
     # noisy with permission errors. The backups are not all dotfiles themselves
