@@ -119,10 +119,12 @@ fi
 
 echo "✨ Installation complete!"
 echo "-------------------------------------------------------"
-if [ -n "$ZPROFILE_BAK" ]; then
-    echo "⚠️  ACTION REQUIRED: check your old ~/.zprofile for secrets."
-    echo "   Copy any 'export ...' secret lines from"
-    echo "     $ZPROFILE_BAK"
+if [ -n "$ZSHRC_BAK" ] || [ -n "$ZPROFILE_BAK" ]; then
+    echo "⚠️  ACTION REQUIRED: zsh no longer reads ~/.zshrc or ~/.zprofile, because"
+    echo "   ZDOTDIR now points at this repository. These were moved aside:"
+    [ -n "$ZSHRC_BAK" ]    && echo "     $ZSHRC_BAK"
+    [ -n "$ZPROFILE_BAK" ] && echo "     $ZPROFILE_BAK"
+    echo "   Review them and move anything you still need -- secrets especially --"
     echo "   into"
     echo "     $LOCAL_FILE"
     echo "   Machine paths and Homebrew setup are already handled by conf.d/, os/ and hosts/."

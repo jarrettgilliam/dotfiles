@@ -73,6 +73,7 @@ The prefixes encode dependencies, not preference:
 | `41-vcs-prompt` | Needs zsh-async from `40`. |
 | `50-aliases` | Registers the `functions/` autoloads. |
 | `90-tools` | External inits last, so they win. |
+| `95-orphan-rc` | Warns about `~/.zshrc` and `~/.zprofile`. Last, so it is seen. |
 
 ## Adding configuration
 
@@ -155,6 +156,19 @@ must be unconditional, because `/etc/zshrc` has already run by that point.
 **`ZDOTDIR` is not exported.** Every zsh re-reads `~/.zshenv` and re-derives
 it, so exporting gains nothing — but an exported value would follow you into
 `sudo -s` and point root's shell at this config.
+
+**`~/.zshrc` and `~/.zprofile` are dead here, and that is warned about.** With
+`ZDOTDIR` set, zsh reads `zsh/.zshrc` and never looks at the copies in `$HOME`.
+Installers do not know this — conda, nvm and pyenv append to `~/.zshrc`,
+Homebrew and rustup to `~/.zprofile` — so their additions silently do nothing.
+`install.sh` moves any existing pair aside as `*.dotfiles-bak`, and
+`conf.d/95-orphan-rc.zsh` warns on startup if either reappears.
+
+The warning is deliberately not a fix. Sourcing those files instead would run
+things twice, since Homebrew and nvm are already handled in
+`05-environment.zsh`, and would paper over the duplication rather than showing
+it. Move what you need into `~/.zsh.local` and delete the file. The warning
+prints once per terminal, not once per pane, and only for non-empty files.
 
 ## Third-party code
 
