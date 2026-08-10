@@ -27,9 +27,14 @@ The distinctive final extension exists so that all of them, from every package
 and every run, can be found and removed with one command:
 
 ```sh
-find ~/.[!.]* -maxdepth 3 -name '*.dotfiles-bak' -print     # review
-find ~/.[!.]* -maxdepth 3 -name '*.dotfiles-bak' -delete    # delete
+find ~/.[^.]* -maxdepth 3 -name '*.dotfiles-bak' -print  2>/dev/null   # review
+find ~/.[^.]* -maxdepth 3 -name '*.dotfiles-bak' -delete 2>/dev/null   # delete
 ```
+
+`[^.]` rather than the more usual `[!.]`, because interactive zsh applies
+history expansion to the `!` before globbing and fails with `event not found`.
+Both shells accept `[^.]` and match the same entries. Errors are discarded for
+directories the OS refuses to traverse, such as `~/.Trash` on macOS.
 
 `install.sh` prints the delete command whenever a run displaces something, so
 there is nothing to remember.

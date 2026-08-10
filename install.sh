@@ -277,8 +277,14 @@ if [ $backed_up -gt 0 ]; then
     # -- ~/.config/git/ignore.<stamp>.dotfiles-bak is not -- but the top-level
     # entry always starts with a dot, which holds as long as packages install
     # to dot paths.
+    #
+    # [^.] rather than the more usual [!.]: interactive zsh applies history
+    # expansion to the `!` before globbing ever happens, so a pasted [!.] dies
+    # with "event not found". Both shells accept [^.], and it matches exactly
+    # the same entries. 2>/dev/null covers directories the OS refuses to
+    # traverse, such as ~/.Trash on macOS.
     echo "Displaced files were kept as *.dotfiles-bak. Delete them when ready."
-    echo "review:   find ~/.[!.]* -maxdepth 3 -name '*.dotfiles-bak' -print"
-    echo "delete:   find ~/.[!.]* -maxdepth 3 -name '*.dotfiles-bak' -delete"
+    echo "review:   find ~/.[^.]* -maxdepth 3 -name '*.dotfiles-bak' -print 2>/dev/null"
+    echo "delete:   find ~/.[^.]* -maxdepth 3 -name '*.dotfiles-bak' -delete 2>/dev/null"
 fi
 echo "-------------------------------------------------------"
