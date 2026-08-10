@@ -153,12 +153,9 @@ if [ -e "$LOCAL_FILE" ]; then
 else
     cat > "$LOCAL_FILE" <<EOF
 # Machine-local shell configuration. NOT tracked in git -- put secrets here.
-# Sourced first by shared/05-environment.sh, before the os/ and hosts/ layers.
-#
 # Read by BOTH bash and zsh, so keep it compatible with both.
 
-# Selects shared/hosts/<name>.sh. Set explicitly because a DHCP-assigned
-# hostname changes between networks.
+# Loads the machine specific settings from shared/hosts/<name>.sh.
 SHELL_MACHINE=$(scutil --get LocalHostName 2>/dev/null || hostname -s 2>/dev/null || echo "${HOSTNAME%%.*}")
 
 # export SOME_SECRET='...'
