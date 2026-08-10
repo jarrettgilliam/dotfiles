@@ -284,7 +284,7 @@ if [ $backed_up -gt 0 ]; then
     # the same entries. 2>/dev/null covers directories the OS refuses to
     # traverse, such as ~/.Trash on macOS.
     echo "Displaced files were kept as *.dotfiles-bak. Delete them when ready."
-    echo "review:   find ~/.[^.]* -maxdepth 3 -name '*.dotfiles-bak' -print 2>/dev/null"
-    echo "delete:   find ~/.[^.]* -maxdepth 3 -name '*.dotfiles-bak' -delete 2>/dev/null"
+    echo "   find ~/.[^.]* -maxdepth 3 -name '*.dotfiles-bak' -print  2>/dev/null   # review"
+    echo "   find ~/.[^.]* -maxdepth 3 -name '*.dotfiles-bak' -delete 2>/dev/null   # delete"
 fi
 echo "-------------------------------------------------------"
