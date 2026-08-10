@@ -1,7 +1,8 @@
-# The NAS. Sourced by conf.d/05-environment.zsh when ZSH_MACHINE=sheik, or
+# The NAS. Sourced by shared/05-environment.sh when SHELL_MACHINE=sheik, or
 # when the short hostname matches.
 #
-# Tracked in git, so nothing secret goes here -- secrets live in ~/.zsh.local.
+# Tracked in git, so nothing secret goes here -- secrets live in
+# ~/.shell.local.
 
 # Watch filesystem activity under the pools. fatrace uses fanotify, so this is
 # Linux-only, which is implied by the machine rather than guarded for.

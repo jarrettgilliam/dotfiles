@@ -81,7 +81,7 @@ than merely discouraged:
 
 | File | Holds |
 |---|---|
-| `~/.zsh.local` | `ZSH_MACHINE`, secrets, anything shell-specific to one box |
+| `~/.shell.local` | `SHELL_MACHINE`, secrets, anything specific to one box. Read by bash and zsh. |
 | `~/.gitconfig.local` | git settings for one machine, including a different identity |
 
 `.gitignore` additionally covers shell history, completion caches and installer

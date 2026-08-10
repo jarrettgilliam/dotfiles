@@ -4,7 +4,12 @@
 # This package has its own installer rather than being mirrored into $HOME,
 # because zsh is not installed file by file: only ~/.zshenv is placed in $HOME,
 # and it sets ZDOTDIR so zsh reads .zshrc and the rest straight out of zsh/.
-# The machine-local file and the cache directory need handling too.
+# bash has no equivalent, so it gets ordinary symlinks. The machine-local file
+# and the cache directories need handling too.
+#
+# Both shells are always installed, not just the current login shell: bash is
+# what you land in on machines where zsh is unavailable, and those are exactly
+# the machines where you cannot run an installer first.
 #
 # Safe to re-run. Called by the top-level install.sh, or directly.
 
@@ -18,25 +23,58 @@ DRY_RUN="${DOTFILES_DRY_RUN:-0}"
 # calls us. The default is only used when this script is run directly.
 STAMP="${DOTFILES_BAK_SUFFIX:-$(date +%Y%m%d%H%M%S).dotfiles-bak}"
 
-if [ "$DRY_RUN" = "1" ]; then
-    if [ -L "$HOME/.zshenv" ] && [ "$(readlink "$HOME/.zshenv")" = "$ZDOTDIR_SRC/.zshenv" ]; then
-        echo "   ~/.zshenv already points here"
-    else
-        echo "   would link ~/.zshenv -> ${ZDOTDIR_SRC/#$HOME/~}/.zshenv"
+LOCAL_FILE="$HOME/.shell.local"
+
+# link_home <target> <link-name>
+#
+# Idempotent symlink into $HOME, displacing a real file via the shared backup
+# convention. Reports what it did.
+link_home() {
+    local target="$1" link="$2"
+
+    if [ -L "$link" ] && [ "$(readlink "$link")" = "$target" ]; then
+        echo "   ℹ️  ${link/#$HOME/~} already points here"
+        return 0
     fi
-    echo "   would ensure ${XDG_CACHE_HOME:-$HOME/.cache}/zsh exists"
-    [ -e "$HOME/.zsh.local" ] || echo "   would create ~/.zsh.local (mode 600)"
+
+    if [ -e "$link" ] && [ ! -L "$link" ]; then
+        mv "$link" "$link.$STAMP"
+        echo "   💾 Backed up $(basename "$link") -> $(basename "$link").$STAMP"
+    else
+        rm -f "$link"
+    fi
+
+    ln -s "$target" "$link"
+    echo "   ✅ ${link/#$HOME/~}"
+}
+
+if [ "$DRY_RUN" = "1" ]; then
+    for pair in \
+        "$ZDOTDIR_SRC/.zshenv:$HOME/.zshenv" \
+        "$SOURCE_DIR/bash/.bashrc:$HOME/.bashrc" \
+        "$SOURCE_DIR/bash/.bash_profile:$HOME/.bash_profile"
+    do
+        _target="${pair%%:*}"; _link="${pair#*:}"
+        if [ -L "$_link" ] && [ "$(readlink "$_link")" = "$_target" ]; then
+            echo "   ${_link/#$HOME/~} already points here"
+        else
+            echo "   would link ${_link/#$HOME/~} -> ${_target/#$HOME/~}"
+        fi
+    done
+    echo "   would ensure ${XDG_CACHE_HOME:-$HOME/.cache}/{zsh,bash} exist"
+    [ -e "$LOCAL_FILE" ] || echo "   would create ~/.shell.local (mode 600)"
     exit 0
 fi
 
-echo "🚀 Installing zsh configuration from $ZDOTDIR_SRC..."
+echo "🚀 Installing shell configuration from $SOURCE_DIR..."
 
 # ---------------------------------------------------------------------------
-# Move aside the files ZDOTDIR makes inert.
+# Move aside the zsh files ZDOTDIR makes inert.
 #
 # With ZDOTDIR set, zsh reads $ZDOTDIR/.zshrc and $ZDOTDIR/.zprofile and
 # ignores the ones in $HOME entirely. Leaving them in place is harmless but
-# deeply confusing later, so they are backed up and removed.
+# deeply confusing later, so they are backed up and removed. bash has no such
+# redirection: ~/.bashrc is the real thing, so it is linked, not moved.
 # ---------------------------------------------------------------------------
 ZSHRC_BAK=""
 ZPROFILE_BAK=""
@@ -52,8 +90,8 @@ for f in "$HOME/.zshrc" "$HOME/.zprofile"; do
 done
 
 # ---------------------------------------------------------------------------
-# The one symlink. On MSYS2/Cygwin, symlink creation needs Developer Mode or
-# admin, so fall back to a small real file that does the same job.
+# zsh: the one symlink. On MSYS2/Cygwin, symlink creation needs Developer Mode
+# or admin, so fall back to a small real file that does the same job.
 # ---------------------------------------------------------------------------
 ZSHENV="$HOME/.zshenv"
 if [ -L "$ZSHENV" ] && [ "$(readlink "$ZSHENV")" = "$ZDOTDIR_SRC/.zshenv" ]; then
@@ -77,6 +115,14 @@ EOF
 fi
 
 # ---------------------------------------------------------------------------
+# bash: ordinary symlinks. .bash_profile is needed as well as .bashrc because
+# bash reads only the profile for login shells, and macOS Terminal opens a
+# login shell for every tab.
+# ---------------------------------------------------------------------------
+link_home "$SOURCE_DIR/bash/.bashrc" "$HOME/.bashrc"
+link_home "$SOURCE_DIR/bash/.bash_profile" "$HOME/.bash_profile"
+
+# ---------------------------------------------------------------------------
 # Plugins live in zsh/plugins/ as submodules, checked out by the top-level
 # install.sh -- submodules are a repository concern, so this script does not
 # name them. When run on its own, note if they are missing; conf.d/40-plugins
@@ -90,26 +136,30 @@ for d in "$ZDOTDIR_SRC"/plugins/*/; do
 done
 
 # ---------------------------------------------------------------------------
-# Cache directory
+# Cache directories, one per shell: cached tool output is not interchangeable
+# between them.
 # ---------------------------------------------------------------------------
-CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/zsh"
-mkdir -p "$CACHE_DIR" && echo "   ✅ Cache directory: $CACHE_DIR"
+CACHE_ROOT="${XDG_CACHE_HOME:-$HOME/.cache}"
+mkdir -p "$CACHE_ROOT/zsh" "$CACHE_ROOT/bash" &&
+    echo "   ✅ Cache directories: $CACHE_ROOT/{zsh,bash}"
 
 # ---------------------------------------------------------------------------
-# Machine-local file: identity and secrets. Never tracked, and deliberately
-# outside the repository so it cannot be committed by accident.
+# Machine-local file: identity and secrets, read by both shells. Never
+# tracked, and deliberately outside the repository so it cannot be committed
+# by accident.
 # ---------------------------------------------------------------------------
-LOCAL_FILE="$HOME/.zsh.local"
 if [ -e "$LOCAL_FILE" ]; then
     echo "   ℹ️  $LOCAL_FILE already exists, leaving it untouched"
 else
     cat > "$LOCAL_FILE" <<EOF
-# Machine-local zsh configuration. NOT tracked in git -- put secrets here.
-# Sourced first by conf.d/05-environment.zsh, before the os/ and hosts/ layers.
+# Machine-local shell configuration. NOT tracked in git -- put secrets here.
+# Sourced first by shared/05-environment.sh, before the os/ and hosts/ layers.
+#
+# Read by BOTH bash and zsh, so keep it compatible with both.
 
-# Selects hosts/<name>.zsh. Set explicitly because a DHCP-assigned hostname
-# changes between networks.
-ZSH_MACHINE=$(scutil --get LocalHostName 2>/dev/null || hostname -s 2>/dev/null || echo "${HOSTNAME%%.*}")
+# Selects shared/hosts/<name>.sh. Set explicitly because a DHCP-assigned
+# hostname changes between networks.
+SHELL_MACHINE=$(scutil --get LocalHostName 2>/dev/null || hostname -s 2>/dev/null || echo "${HOSTNAME%%.*}")
 
 # export SOME_SECRET='...'
 EOF
@@ -134,7 +184,7 @@ echo "Open a NEW terminal to pick up the changes. Keep this one open until"
 echo "you have confirmed the new shell works."
 echo ""
 echo "To roll back:"
-echo "   rm ~/.zshenv"
+echo "   rm ~/.zshenv ~/.bashrc ~/.bash_profile"
 [ -n "$ZSHRC_BAK" ]    && echo "   mv $ZSHRC_BAK ~/.zshrc"
 [ -n "$ZPROFILE_BAK" ] && echo "   mv $ZPROFILE_BAK ~/.zprofile"
 echo "-------------------------------------------------------"

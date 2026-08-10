@@ -6,7 +6,9 @@
 
 typeset -U fpath
 
-# Our own functions and completions.
+# Our own completions. The shell functions that used to live here are plain
+# definitions in shared/functions/ now, so bash can use them too; this stays
+# on fpath for completion functions (_foo), which have no bash equivalent.
 fpath=($ZDOTDIR/functions $fpath)
 
 # Homebrew's site-functions. `brew shellenv` (os/darwin.zsh) already adds this
@@ -20,32 +22,8 @@ fi
 
 [[ -d $ZSH_CACHE_DIR ]] || mkdir -p $ZSH_CACHE_DIR
 
-# ---------------------------------------------------------------------------
-# cached_eval <cache-name> <command> [args...]
-#
-# Sources a tool's shell-init output from a cache file, regenerating only when
-# the tool's binary is newer than the cache. Several tools (kubectl in
-# particular) cost tens of milliseconds per startup to re-generate identical
-# output. Writes via a temp file so a failed run cannot leave a truncated
-# cache behind.
-# ---------------------------------------------------------------------------
-cached_eval() {
-    local name=$1; shift
-    local bin=${commands[$1]}
-    [[ -n $bin ]] || return 0
-
-    local cache=$ZSH_CACHE_DIR/$name.zsh
-    if [[ ! -s $cache || $bin -nt $cache ]]; then
-        local tmp=$cache.$$
-        if "$@" >| $tmp 2>/dev/null && [[ -s $tmp ]]; then
-            command mv -f $tmp $cache
-        else
-            command rm -f $tmp
-            return 1
-        fi
-    fi
-    source $cache
-}
+# cached_eval, used by 90-tools.zsh, now lives in shared/lib.sh so bash can
+# use it too.
 
 # ---------------------------------------------------------------------------
 # compinit, at most one full rebuild per day.

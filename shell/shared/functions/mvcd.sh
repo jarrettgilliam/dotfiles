@@ -1,2 +1,4 @@
 # Move something and follow it to its destination.
-mv "$@" && cd "${@: -1}"
+mvcd() {
+    mv "$@" && cd "${@: -1}" || return
+}

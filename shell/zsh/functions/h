@@ -1,8 +1,0 @@
-# Search shell history. Each argument narrows the result further.
-local sresult=$(history 0)
-
-for x in "$@"; do
-    sresult=$(print -r -- "$sresult" | grep -aiE "$x")
-done
-
-print -r -- "$sresult" | tail -n 20

@@ -1,2 +1,4 @@
 # Archive a path as <name>.zip in the current directory.
-apack -F zip "$(basename "$1")".zip "$1"
+azip() {
+    apack -F zip "$(basename "$1")".zip "$1"
+}

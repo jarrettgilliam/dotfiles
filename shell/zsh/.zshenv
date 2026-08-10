@@ -12,9 +12,18 @@ ZDOTDIR=${${(%):-%N}:A:h}
 # so exporting buys nothing -- but an exported ZDOTDIR would follow you into
 # `sudo -s` and point root's shell at this config.
 
+# The shell/ directory: the parent of ZDOTDIR. Both shells set this so the
+# shared/ files can locate each other; bash has no ZDOTDIR and works it out
+# from $BASH_SOURCE instead.
+DOTFILES_SHELL=${ZDOTDIR:h}
+
 : ${XDG_CACHE_HOME:=$HOME/.cache}
 export XDG_CACHE_HOME
+
+# Per-shell, because cached tool output is not interchangeable: `kubectl
+# completion bash` and `zsh` generate entirely different scripts.
 ZSH_CACHE_DIR=$XDG_CACHE_HOME/zsh
+DOTFILES_CACHE_DIR=$ZSH_CACHE_DIR
 
 # Terminal.app's per-session save/restore writes to
 # "${ZDOTDIR:-$HOME}/.zsh_sessions" -- and since ZDOTDIR is now this

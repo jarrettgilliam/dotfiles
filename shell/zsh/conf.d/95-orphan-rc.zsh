@@ -23,7 +23,7 @@ if [[ -z $ZSH_ORPHAN_RC_CHECKED ]]; then
         for _orphan in ~/.zshrc ~/.zprofile; do
             [[ -s $_orphan ]] || continue
             print -u2 -r -- "⚠️  ${_orphan/#$HOME/~} exists but zsh never reads it: ZDOTDIR points at $ZDOTDIR."
-            print -u2 -r -- "   Something appended to it. Move what you need into ~/.zsh.local, then delete it."
+            print -u2 -r -- "   Something appended to it. Move what you need into ~/.shell.local, then delete it."
         done
         unset _orphan
     fi

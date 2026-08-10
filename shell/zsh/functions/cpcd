@@ -1,2 +1,0 @@
-# Copy something and follow it to its destination.
-cp -r "$@" && cd "${@: -1}"
