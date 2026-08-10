@@ -1,0 +1,2 @@
+# Archive a path as <name>.tar.gz in the current directory.
+apack -F tar.gz "$(basename "$1")".tar.gz "$1"

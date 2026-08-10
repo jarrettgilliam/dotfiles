@@ -1,0 +1,39 @@
+# Move one or more files/folders, leaving a symlink at each original location.
+#
+#   mvln <source1> [source2...] <destination>
+#
+# NOTE: the relative-path branch uses `realpath -m --relative-to`, which is
+# GNU coreutils only. macOS ships a BSD realpath without those flags, so
+# relative destinations will fail there unless coreutils is installed.
+# Absolute destinations work everywhere.
+
+if (( $# < 2 )); then
+    print -u2 "Usage: mvln <source1> [source2...] <destination>"
+    return 1
+fi
+
+local dest="${@: -1}"
+local total=$#
+local count=0
+local src new_path target
+
+mv "$@" || return 1
+
+for src in "$@"; do
+    (( count++ ))
+    (( count == total )) && break
+
+    if [[ -d $dest ]]; then
+        new_path="$dest/$(basename "$src")"
+    else
+        new_path="$dest"
+    fi
+
+    if [[ $dest == /* ]]; then
+        target="$(realpath "$new_path")"
+    else
+        target="$(realpath -m --relative-to="$(dirname "$src")" "$new_path")"
+    fi
+
+    ln -s "$target" "$src"
+done

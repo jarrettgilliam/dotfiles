@@ -1,0 +1,26 @@
+# Secrets live in ~/.zsh.local, outside this repository, so they cannot be
+# committed. These patterns are defense in depth for anything that ends up
+# here by accident or by a future change.
+*.local.zsh
+local.zsh
+local.*.zsh
+
+# Never commit shell history: credentials get typed into shells and land in it
+# verbatim. This is the classic public-dotfiles breach.
+.zsh_history
+.zsh_sessions/
+.bash_history
+
+# Generated caches. $XDG_CACHE_HOME/zsh is the real location; these catch the
+# case where it falls back to somewhere inside the repo.
+cache/
+.zcompdump*
+.zcompcache/
+
+# Backups made by install.sh when it replaces a real file.
+*.bak.[0-9]*
+
+# OS noise
+.DS_Store
+._.DS_Store
+.localized

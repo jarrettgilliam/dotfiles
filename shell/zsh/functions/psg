@@ -1,0 +1,2 @@
+# Grep the process list.
+ps aux | grep -E "$1"
