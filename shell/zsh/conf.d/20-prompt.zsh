@@ -4,7 +4,7 @@
 # root is a warning, SSH needs the hostname, local needs neither.
 #
 #   %(?.A.B)          A if last exit status was 0, else B
-#   %F{n}...%f        foreground colour n
+#   %F{n}...%f        foreground color n
 #   %U...%u           underline
 #   %B...%b           bold
 #   %50<...<%~%<<     cwd, truncated to 50 chars with a leading ellipsis

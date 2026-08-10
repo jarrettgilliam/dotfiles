@@ -18,7 +18,7 @@ alias mmv='noglob zmv -W'
 # --color=auto, not bare --color: the bare form means "always", which emits
 # escape codes into pipes (`ls | cat`). macOS's BSD ls has accepted both
 # spellings for several releases now, so this needs no OS branching. The
-# colour variables themselves live in 00-options.zsh, all three together.
+# color variables themselves live in 00-options.zsh, all three together.
 # ---------------------------------------------------------------------------
 alias ls='ls -CF --color=auto'
 

@@ -1,6 +1,6 @@
 # dotfiles
 
-Personal configuration, organised as independent packages and installed by
+Personal configuration, organized as independent packages and installed by
 symlink.
 
 ## Install
@@ -31,35 +31,8 @@ find ~/.[^.]* -maxdepth 3 -name '*.dotfiles-bak' -print  2>/dev/null   # review
 find ~/.[^.]* -maxdepth 3 -name '*.dotfiles-bak' -delete 2>/dev/null   # delete
 ```
 
-`[^.]` rather than the more usual `[!.]`, because interactive zsh applies
-history expansion to the `!` before globbing and fails with `event not found`.
-Both shells accept `[^.]` and match the same entries. Errors are discarded for
-directories the OS refuses to traverse, such as `~/.Trash` on macOS.
-
-`install.sh` prints the delete command whenever a run displaces something, so
-there is nothing to remember.
-
-Searching only `$HOME`'s dot entries keeps this quick and avoids descending into
-`~/Library`, which on macOS is slow and noisy. Note that the backups are not all
-dotfiles themselves — `~/.config/git/ignore.<stamp>.dotfiles-bak` is not — it is
-the *top-level* entry that always starts with a dot. Widen the search if a
-package is ever added that installs somewhere like `~/bin` or `~/Library`.
-
-The extension is deliberately not `.bak`: other software uses that, and this
-machine already has unrelated `.bak.1` files under `~/.lmstudio`. A cleanup
-command should never be able to catch something this repository did not create.
-
 Package installers use the same convention; the top-level script exports
 `DOTFILES_BAK_SUFFIX` so a whole run shares one timestamp.
-
-## Packages
-
-| Package | What it configures |
-|---|---|
-| `shell` | zsh (and, shortly, bash) |
-| `git` | `~/.gitconfig`, the global ignore file, and the default identity |
-| `tmux` | `~/.tmux.conf` |
-| `vim` | `~/.vimrc` and colorschemes |
 
 ## How a package is installed
 
@@ -81,9 +54,6 @@ files an application writes itself — `~/.vim/.netrwhist`, swap files, spell
 dictionaries — land in your real home directory instead of turning up as
 untracked changes here.
 
-`install.sh`, `README*`, `LICENSE*`, `.gitignore` and `.DS_Store` are treated as
-repository files and never linked.
-
 **2. Its own `install.sh`** — if a package contains an executable `install.sh`,
 that script runs instead and is entirely responsible for the package. `shell`
 does this: zsh is not installed file by file, but by pointing `ZDOTDIR` at the
@@ -93,14 +63,14 @@ Submodules are **not** a package's concern. The top-level script checks out
 every submodule in the repository before installing anything, so a package that
 gains one later needs no installer change and there is no list to keep in sync.
 
-A package installer should be idempotent and should honour `DOTFILES_DRY_RUN=1`
+A package installer should be idempotent and should honor `DOTFILES_DRY_RUN=1`
 by reporting what it would do without doing it.
 
 ## Adding a package
 
 1. Create the directory, laying its contents out as they appear under `$HOME`.
 2. Add an `install.sh` only if symlinking files is not enough.
-3. Add a `README.md` only if the package has behaviour that is not obvious.
+3. Add a `README.md` only if the package has behavior that is not obvious.
    `shell/` earns one; a package that is four symlinked files does not.
 4. Add it to the table above.
 
@@ -115,7 +85,7 @@ than merely discouraged:
 | `~/.gitconfig.local` | git settings for one machine, including a different identity |
 
 `.gitignore` additionally covers shell history, completion caches and installer
-backups, as defence in depth.
+backups, as defense in depth.
 
 ### A machine with a different git identity
 
@@ -129,29 +99,11 @@ file rather than inline:
 # ~/.gitconfig.local -- untracked, on a machine that defaults to another address
 [user]
 	email = you@example.com
-
 [includeIf "hasconfig:remote.*.url:git@github.com:*/**"]
 	path = ~/.config/git/identity-personal
 [includeIf "hasconfig:remote.*.url:https://github.com/**"]
 	path = ~/.config/git/identity-personal
 ```
-
-Two things silently break this if you get them wrong:
-
-- **Order matters.** The unconditional `[user]` block must come *before* the
-  `includeIf` blocks. After them, it overwrites the identity they just set.
-- **Patterns need `**`, not `*`.** Matching uses gitdir's globbing rules, where
-  `*` does not cross `/`. So `*github.com*` fails to match
-  `git@github.com:you/repo.git` — the trailing `*` would have to cover
-  `:you/repo.git`. Hence `git@github.com:*/**`, and a second block if you clone
-  over both SSH and HTTPS.
-
-`includeIf` cannot be negated and selects a *file* rather than a value, which is
-why the exception needs something to point at. It cannot point at `.gitconfig`
-itself: that file includes `~/.gitconfig.local`, which would create a loop.
-`hasconfig` needs git 2.36+, and is evaluated against config as it is read, so
-it behaves oddly during `git clone` itself — by the time you commit, the remote
-exists and it resolves correctly.
 
 ## Third-party code
 

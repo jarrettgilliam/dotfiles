@@ -36,7 +36,7 @@ export NMON=cmnd
 export DOTNET_CLI_TELEMETRY_OPTOUT=1
 
 # ---------------------------------------------------------------------------
-# ls colours
+# ls colors
 #
 # All three variables are the same topic, so they stay together rather than
 # being split across os/ files: LS_COLORS is read by GNU ls, and CLICOLOR /

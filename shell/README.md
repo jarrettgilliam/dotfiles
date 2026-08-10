@@ -64,7 +64,7 @@ The prefixes encode dependencies, not preference:
 
 | File | Why there |
 |---|---|
-| `00-options` | No dependencies. Pins `HISTFILE` and sets the colour variables. |
+| `00-options` | No dependencies. Pins `HISTFILE` and sets the color variables. |
 | `05-environment` | Needs `LS_COLORS` from `00`; provides `HOMEBREW_PREFIX` to `10`. |
 | `10-completion` | Must finish building `fpath` *before* `compinit`. Defines `cached_eval`. |
 | `20-prompt` | Plain `PROMPT` strings. |
@@ -103,7 +103,7 @@ deduplicates.
 
 **A secret** → `~/.zsh.local`. Never anywhere in this repository.
 
-One deliberate exception: the `ls` colour variables are all set together in
+One deliberate exception: the `ls` color variables are all set together in
 `00-options.zsh`, including the macOS-only pair, rather than being split
 across `os/` files. They are one topic, and `10-completion.zsh` needs
 `LS_COLORS` set early regardless.
