@@ -269,4 +269,16 @@ if [ $DRY_RUN -eq 1 ]; then
 else
     echo "Done: $summary."
 fi
+
+if [ $backed_up -gt 0 ]; then
+    # Searching only $HOME's dot entries is fast and identical on every
+    # platform: it never descends into ~/Library, which on macOS is slow and
+    # noisy with permission errors. The backups are not all dotfiles themselves
+    # -- ~/.config/git/ignore.<stamp>.dotfiles-bak is not -- but the top-level
+    # entry always starts with a dot, which holds as long as packages install
+    # to dot paths.
+    echo "Displaced files were kept as *.dotfiles-bak. Delete them when ready."
+    echo "review:   find ~/.[!.]* -maxdepth 3 -name '*.dotfiles-bak' -print"
+    echo "delete:   find ~/.[!.]* -maxdepth 3 -name '*.dotfiles-bak' -delete"
+fi
 echo "-------------------------------------------------------"

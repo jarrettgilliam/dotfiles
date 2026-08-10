@@ -27,12 +27,18 @@ The distinctive final extension exists so that all of them, from every package
 and every run, can be found and removed with one command:
 
 ```sh
-find ~ -maxdepth 4 -path ~/Library -prune -o -name '*.dotfiles-bak' -print    # review
-find ~ -maxdepth 4 -path ~/Library -prune -o -name '*.dotfiles-bak' -delete   # delete
+find ~/.[!.]* -maxdepth 3 -name '*.dotfiles-bak' -print     # review
+find ~/.[!.]* -maxdepth 3 -name '*.dotfiles-bak' -delete    # delete
 ```
 
-Pruning `~/Library` is only for macOS, where descending into it is slow and
-emits permission errors for protected directories.
+`install.sh` prints the delete command whenever a run displaces something, so
+there is nothing to remember.
+
+Searching only `$HOME`'s dot entries keeps this quick and avoids descending into
+`~/Library`, which on macOS is slow and noisy. Note that the backups are not all
+dotfiles themselves — `~/.config/git/ignore.<stamp>.dotfiles-bak` is not — it is
+the *top-level* entry that always starts with a dot. Widen the search if a
+package is ever added that installs somewhere like `~/bin` or `~/Library`.
 
 The extension is deliberately not `.bak`: other software uses that, and this
 machine already has unrelated `.bak.1` files under `~/.lmstudio`. A cleanup
