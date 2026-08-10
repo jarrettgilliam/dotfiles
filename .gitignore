@@ -4,6 +4,8 @@
 *.local.zsh
 local.zsh
 local.*.zsh
+.gitconfig.local
+.gitconfig.*
 
 # Never commit shell history: credentials get typed into shells and land in it
 # verbatim. This is the classic public-dotfiles breach.
@@ -17,8 +19,8 @@ cache/
 .zcompdump*
 .zcompcache/
 
-# Backups made by install.sh when it replaces a real file.
-*.bak.[0-9]*
+# Backups made by install.sh when it displaces a real file.
+*.dotfiles-bak
 
 # OS noise
 .DS_Store

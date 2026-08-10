@@ -19,7 +19,7 @@ instructions are printed at the end of the run.
 ## Layout
 
 ```
-install.sh     Places ~/.zshenv, initialises submodules, seeds ~/.zsh.local.
+install.sh     Places ~/.zshenv, seeds ~/.zsh.local, makes the cache dir.
 bench.zsh      Startup benchmark. Kept out of zsh/ so ZDOTDIR holds only
                files zsh reads.
 
@@ -31,7 +31,7 @@ zsh/           <- ZDOTDIR
   functions/   Autoloaded functions, one per file.
   os/          Per-OS config: environment, PATH and aliases.
   hosts/       Per-machine config: environment, PATH and aliases.
-  plugins/     Third-party git submodules.
+  plugins/     Third-party git submodules, checked out by ../install.sh.
 
 ~/.zsh.local   Secrets and machine identity. Outside the repo, never tracked.
 ```

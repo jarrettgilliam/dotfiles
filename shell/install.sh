@@ -4,7 +4,7 @@
 # This package has its own installer rather than being mirrored into $HOME,
 # because zsh is not installed file by file: only ~/.zshenv is placed in $HOME,
 # and it sets ZDOTDIR so zsh reads .zshrc and the rest straight out of zsh/.
-# The plugin submodules and the machine-local file need handling too.
+# The machine-local file and the cache directory need handling too.
 #
 # Safe to re-run. Called by the top-level install.sh, or directly.
 
@@ -12,12 +12,18 @@ set -u
 
 SOURCE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ZDOTDIR_SRC="$SOURCE_DIR/zsh"
-STAMP="pre-zdotdir"
 DRY_RUN="${DOTFILES_DRY_RUN:-0}"
 
+# Same backup convention as the top-level installer, which exports this when it
+# calls us. The default is only used when this script is run directly.
+STAMP="${DOTFILES_BAK_SUFFIX:-$(date +%Y%m%d%H%M%S).dotfiles-bak}"
+
 if [ "$DRY_RUN" = "1" ]; then
-    echo "   would link ~/.zshenv -> ${ZDOTDIR_SRC/#$HOME/~}/.zshenv"
-    echo "   would initialise the zsh-async and zsh-history-substring-search submodules"
+    if [ -L "$HOME/.zshenv" ] && [ "$(readlink "$HOME/.zshenv")" = "$ZDOTDIR_SRC/.zshenv" ]; then
+        echo "   ~/.zshenv already points here"
+    else
+        echo "   would link ~/.zshenv -> ${ZDOTDIR_SRC/#$HOME/~}/.zshenv"
+    fi
     echo "   would ensure ${XDG_CACHE_HOME:-$HOME/.cache}/zsh exists"
     [ -e "$HOME/.zsh.local" ] || echo "   would create ~/.zsh.local (mode 600)"
     exit 0
@@ -32,15 +38,16 @@ echo "🚀 Installing zsh configuration from $ZDOTDIR_SRC..."
 # ignores the ones in $HOME entirely. Leaving them in place is harmless but
 # deeply confusing later, so they are backed up and removed.
 # ---------------------------------------------------------------------------
+ZSHRC_BAK=""
+ZPROFILE_BAK=""
 for f in "$HOME/.zshrc" "$HOME/.zprofile"; do
     if [ -e "$f" ] || [ -L "$f" ]; then
-        if [ -e "$f.$STAMP" ]; then
-            echo "   ℹ️  Backup $f.$STAMP already exists, leaving it alone"
-            rm -f "$f"
-        else
-            mv "$f" "$f.$STAMP"
-            echo "   ✅ Backed up $(basename "$f") -> $(basename "$f").$STAMP"
-        fi
+        mv "$f" "$f.$STAMP"
+        echo "   💾 Backed up $(basename "$f") -> $(basename "$f").$STAMP"
+        case "$f" in
+            *.zshrc)    ZSHRC_BAK="$f.$STAMP" ;;
+            *.zprofile) ZPROFILE_BAK="$f.$STAMP" ;;
+        esac
     fi
 done
 
@@ -70,21 +77,17 @@ EOF
 fi
 
 # ---------------------------------------------------------------------------
-# Plugins
+# Plugins live in zsh/plugins/ as submodules, checked out by the top-level
+# install.sh -- submodules are a repository concern, so this script does not
+# name them. When run on its own, note if they are missing; conf.d/40-plugins
+# skips any it cannot find, so this is a hint rather than a failure.
 # ---------------------------------------------------------------------------
-# Restricted to our two plugins by pathspec. Without it, git walks every
-# submodule in the enclosing repository, and an unrelated broken gitlink
-# elsewhere in the tree aborts the whole run.
-if command -v git >/dev/null 2>&1 && git -C "$SOURCE_DIR" rev-parse --git-dir >/dev/null 2>&1; then
-    if git -C "$SOURCE_DIR" submodule update --init -- \
-            zsh/plugins/zsh-async zsh/plugins/zsh-history-substring-search; then
-        echo "   ✅ Plugin submodules initialised"
-    else
-        echo "   ❌ Failed to initialise submodules; plugins will be skipped at startup"
+for d in "$ZDOTDIR_SRC"/plugins/*/; do
+    [ -d "$d" ] || continue
+    if [ -z "$(ls -A "$d" 2>/dev/null)" ]; then
+        echo "   ℹ️  $(basename "$d") is empty -- run the top-level ./install.sh to check out submodules"
     fi
-else
-    echo "   ℹ️  Not a git checkout, skipping submodule init"
-fi
+done
 
 # ---------------------------------------------------------------------------
 # Cache directory
@@ -116,10 +119,10 @@ fi
 
 echo "✨ Installation complete!"
 echo "-------------------------------------------------------"
-if [ -e "$HOME/.zprofile.$STAMP" ]; then
-    echo "⚠️  ACTION REQUIRED: your old ~/.zprofile held secrets."
+if [ -n "$ZPROFILE_BAK" ]; then
+    echo "⚠️  ACTION REQUIRED: check your old ~/.zprofile for secrets."
     echo "   Copy any 'export ...' secret lines from"
-    echo "     $HOME/.zprofile.$STAMP"
+    echo "     $ZPROFILE_BAK"
     echo "   into"
     echo "     $LOCAL_FILE"
     echo "   Machine paths and Homebrew setup are already handled by conf.d/, os/ and hosts/."
@@ -130,6 +133,6 @@ echo "you have confirmed the new shell works."
 echo ""
 echo "To roll back:"
 echo "   rm ~/.zshenv"
-echo "   mv ~/.zshrc.$STAMP ~/.zshrc         # if present"
-echo "   mv ~/.zprofile.$STAMP ~/.zprofile   # if present"
+[ -n "$ZSHRC_BAK" ]    && echo "   mv $ZSHRC_BAK ~/.zshrc"
+[ -n "$ZPROFILE_BAK" ] && echo "   mv $ZPROFILE_BAK ~/.zprofile"
 echo "-------------------------------------------------------"
