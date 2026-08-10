@@ -27,8 +27,7 @@ machines where you cannot run an installer first.
 ```
 install.sh      Places ~/.zshenv, ~/.bashrc, ~/.bash_profile; seeds
                 ~/.shell.local; makes the cache directories.
-bench.zsh       Startup benchmark. Kept out of zsh/ so ZDOTDIR holds only
-                files zsh reads.
+bench.sh        Startup benchmark for both shells.
 
 shared/         Sourced by BOTH shells.
   lib.sh        has_command, path_prepend/append, cached_eval, is_interactive
@@ -165,7 +164,9 @@ networks.
 
 ## Performance
 
-Startup is roughly 56ms for a login+interactive zsh, down from ~1.05s:
+A new terminal tab costs roughly 46ms in zsh, down from ~1.05s, and 56ms in
+bash — most of bash's being macOS's login-time `/etc/profile` and `path_helper`,
+which cost ~17ms there and only ~1ms in zsh.
 
 - **nvm is lazy-loaded** (`shared/05-environment.sh`). Sourcing `nvm.sh` costs
   ~330ms and was paid by every terminal tab. Stub functions for
@@ -177,8 +178,26 @@ Startup is roughly 56ms for a login+interactive zsh, down from ~1.05s:
 - **`compinit` rebuilds at most daily**, with `-C` otherwise, and its dump
   lives in `$XDG_CACHE_HOME/zsh` rather than `$HOME`.
 
-Measure with `./bench.zsh`, or `./bench.zsh --profile` for a `zprof`
-breakdown.
+### Measuring
+
+```sh
+./bench.sh                 # both shells, 10 runs each
+./bench.sh --shell bash    # one shell
+./bench.sh --compare       # login+interactive vs interactive vs login vs bare
+./bench.sh --breakdown     # cost per conf.d file
+./bench.sh --profile       # zprof, function level, zsh only
+```
+
+`--breakdown` answers "what is making this slow". It starts a shell loading
+only the first `conf.d` file, then the first two, and so on, and reports each
+file's cost as the difference — so it needs no in-shell clock and works
+identically in zsh and in bash 3.2. Its totals are lower than the default
+mode's because the harness skips the system files a login shell reads; the
+baseline line makes that gap visible.
+
+`--profile` goes finer for zsh, attributing time to functions rather than
+files. The two agree: `compinit` at ~10ms and `cached_eval` at ~8ms account for
+`10-completion` and `90-tools` respectively.
 
 > Because `compinit` only does a full rebuild once a day, **adding or removing
 > a completion may not take effect immediately** — a deleted one can linger as
