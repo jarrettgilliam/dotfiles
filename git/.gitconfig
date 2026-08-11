@@ -1,6 +1,3 @@
-# Default identity. Kept in its own file so that a machine which needs a
-# different default can point an includeIf back at this one for the exceptions
-# -- see the git section of the repository README.
 [include]
 	path = ~/.config/git/identity-personal
 [alias]
@@ -20,10 +17,7 @@
 	autoStash = true
 [checkout]
 	defaultRemote = origin
-
-# Machine-local overrides: a different default identity, host-specific settings,
-# anything that should not be tracked. Git ignores this silently when absent, so
-# it is a no-op on machines that have none. Must stay last -- for a single
-# valued key such as user.email, the last value read wins.
+	
+# Untracked machine specific config. It must be loaded last. Not required by git
 [include]
 	path = ~/.gitconfig.local

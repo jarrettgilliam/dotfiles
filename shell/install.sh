@@ -1,16 +1,5 @@
 #!/bin/bash
-# Install the shell configuration.
-#
-# This package has its own installer rather than being mirrored into $HOME,
-# because zsh is not installed file by file: only ~/.zshenv is placed in $HOME,
-# and it sets ZDOTDIR so zsh reads .zshrc and the rest straight out of zsh/.
-# bash has no equivalent, so it gets ordinary symlinks. The machine-local file
-# and the cache directories need handling too.
-#
-# Both shells are always installed, not just the current login shell: bash is
-# what you land in on machines where zsh is unavailable, and those are exactly
-# the machines where you cannot run an installer first.
-#
+# Install the shell configuration. See README.md.
 # Safe to re-run. Called by the top-level install.sh, or directly.
 
 set -u
@@ -68,14 +57,7 @@ fi
 
 echo "🚀 Installing shell configuration from $SOURCE_DIR..."
 
-# ---------------------------------------------------------------------------
 # Move aside the zsh files ZDOTDIR makes inert.
-#
-# With ZDOTDIR set, zsh reads $ZDOTDIR/.zshrc and $ZDOTDIR/.zprofile and
-# ignores the ones in $HOME entirely. Leaving them in place is harmless but
-# deeply confusing later, so they are backed up and removed. bash has no such
-# redirection: ~/.bashrc is the real thing, so it is linked, not moved.
-# ---------------------------------------------------------------------------
 ZSHRC_BAK=""
 ZPROFILE_BAK=""
 for f in "$HOME/.zshrc" "$HOME/.zprofile"; do
@@ -89,10 +71,8 @@ for f in "$HOME/.zshrc" "$HOME/.zprofile"; do
     fi
 done
 
-# ---------------------------------------------------------------------------
-# zsh: the one symlink. On MSYS2/Cygwin, symlink creation needs Developer Mode
-# or admin, so fall back to a small real file that does the same job.
-# ---------------------------------------------------------------------------
+# On MSYS2/Cygwin, symlink creation needs Developer Mode or admin, so fall
+# back to a small real file that does the same job.
 ZSHENV="$HOME/.zshenv"
 if [ -L "$ZSHENV" ] && [ "$(readlink "$ZSHENV")" = "$ZDOTDIR_SRC/.zshenv" ]; then
     echo "   ℹ️  ~/.zshenv already points here"
@@ -114,20 +94,13 @@ EOF
     echo "   ✅ Wrote ~/.zshenv (symlinks unavailable; using a real file)"
 fi
 
-# ---------------------------------------------------------------------------
-# bash: ordinary symlinks. .bash_profile is needed as well as .bashrc because
-# bash reads only the profile for login shells, and macOS Terminal opens a
-# login shell for every tab.
-# ---------------------------------------------------------------------------
+# .bash_profile is needed as well as .bashrc: bash reads only the profile for
+# login shells, and macOS Terminal opens a login shell for every tab.
 link_home "$SOURCE_DIR/bash/.bashrc" "$HOME/.bashrc"
 link_home "$SOURCE_DIR/bash/.bash_profile" "$HOME/.bash_profile"
 
-# ---------------------------------------------------------------------------
-# Plugins live in zsh/plugins/ as submodules, checked out by the top-level
-# install.sh -- submodules are a repository concern, so this script does not
-# name them. When run on its own, note if they are missing; conf.d/40-plugins
-# skips any it cannot find, so this is a hint rather than a failure.
-# ---------------------------------------------------------------------------
+# When run on its own, note any plugin submodule that is missing. A hint
+# rather than a failure: conf.d/40-plugins skips what it cannot find.
 for d in "$ZDOTDIR_SRC"/plugins/*/; do
     [ -d "$d" ] || continue
     if [ -z "$(ls -A "$d" 2>/dev/null)" ]; then
@@ -135,19 +108,12 @@ for d in "$ZDOTDIR_SRC"/plugins/*/; do
     fi
 done
 
-# ---------------------------------------------------------------------------
-# Cache directories, one per shell: cached tool output is not interchangeable
-# between them.
-# ---------------------------------------------------------------------------
+# Cache directories, one per shell. See cached_eval in shared/lib.sh.
 CACHE_ROOT="${XDG_CACHE_HOME:-$HOME/.cache}"
 mkdir -p "$CACHE_ROOT/zsh" "$CACHE_ROOT/bash" &&
     echo "   ✅ Cache directories: $CACHE_ROOT/{zsh,bash}"
 
-# ---------------------------------------------------------------------------
-# Machine-local file: identity and secrets, read by both shells. Never
-# tracked, and deliberately outside the repository so it cannot be committed
-# by accident.
-# ---------------------------------------------------------------------------
+# Machine-local file.
 if [ -e "$LOCAL_FILE" ]; then
     echo "   ℹ️  $LOCAL_FILE already exists, leaving it untouched"
 else

@@ -1,4 +1,4 @@
-# Secrets live in ~/.zsh.local, outside this repository, so they cannot be
+# Secrets live in ~/.shell.local, outside this repository, so they cannot be
 # committed. These patterns are defense in depth for anything that ends up
 # here by accident or by a future change.
 *.local.zsh

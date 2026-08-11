@@ -36,8 +36,8 @@ Package installers use the same convention; the top-level script exports
 
 ## How a package is installed
 
-A package is any top-level directory. There are two ways one gets installed,
-and the installer picks automatically:
+A package is any top-level directory not starting with a dot. There are two ways
+one gets installed, and the installer picks automatically:
 
 **1. Mirror `$HOME`** — the default, and what most packages want. The package's
 inner tree mirrors `$HOME`, and every file in it is symlinked to the matching
@@ -72,7 +72,9 @@ by reporting what it would do without doing it.
 2. Add an `install.sh` only if symlinking files is not enough.
 3. Add a `README.md` only if the package has behavior that is not obvious.
    `shell/` earns one; a package that is four symlinked files does not.
-4. Add it to the table above.
+
+There is no list to register it in: `install.sh` discovers packages by looking
+for top-level directories.
 
 ## Machine-local overrides
 

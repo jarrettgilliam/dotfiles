@@ -1,22 +1,14 @@
 # Helpers used by the shared config and by both shells' own files.
-#
-# Sourced first, before anything in conf.d. Everything here must work in bash
-# and zsh alike, which rules out arrays -- they index differently -- but allows
-# `local`, `[[ ]]` and `$(( ))`.
+# Sourced first, before anything in conf.d.
 
 # has_command <name>
 #
-# True for external commands, shell functions and aliases. Replaces zsh's
-# (( $+commands[x] )), and the wider net matters: the nvm stubs in
-# 05-environment.sh are functions, so the old config needed a second
-# $+functions[x] test to notice them.
+# Matches functions and aliases too, which 50-aliases.sh relies on: the nvm
+# stubs in 05-environment.sh are functions
 has_command() {
     command -v "$1" >/dev/null 2>&1
 }
 
-# is_interactive
-#
-# The portable spelling of zsh's [[ -o interactive ]].
 is_interactive() {
     case $- in
         *i*) return 0 ;;
@@ -24,10 +16,6 @@ is_interactive() {
     esac
 }
 
-# current_shell
-#
-# "zsh" or "bash". Used to pick per-shell cache files and, in a couple of
-# functions, per-shell builtins.
 current_shell() {
     if [ -n "${ZSH_VERSION-}" ]; then
         printf 'zsh\n'
@@ -38,10 +26,8 @@ current_shell() {
 
 # path_prepend / path_append <dir>
 #
-# Add a directory to $PATH if it exists and is not already there. Replaces
-# zsh's `path+=(...)` with `typeset -U path`, which has no bash equivalent.
-# The surrounding colons make the test match whole entries only, so /usr/bin
-# is not considered present because /usr/bin/local is.
+# The surrounding colons match whole entries only, so /usr/bin is not
+# considered present because /usr/bin/local is
 path_prepend() {
     [ -d "$1" ] || return 0
     case ":$PATH:" in
@@ -60,14 +46,9 @@ path_append() {
 
 # cached_eval <cache-name> <command> [args...]
 #
-# Sources a tool's shell-init output from a cache file, regenerating only when
-# the tool's binary is newer than the cache. kubectl in particular costs tens
-# of milliseconds per startup to regenerate identical output.
-#
-# The cache is per shell: `kubectl completion bash` and `kubectl completion
-# zsh` produce entirely different scripts, and $DOTFILES_CACHE_DIR already
-# differs per shell. Writes through a temp file so a failed run cannot leave a
-# truncated cache behind.
+# Sources a tool's init output from a cache, regenerating only when the binary
+# is newer. Keyed by shell, since the generated scripts differ. Writes through
+# a temp file so a failed run cannot leave a truncated cache behind.
 cached_eval() {
     local name=$1; shift
     local bin

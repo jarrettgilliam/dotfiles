@@ -1,13 +1,4 @@
-# Prompt.
-#
-# Three variants, differing only in how loudly they identify the machine:
-# root is a warning, SSH needs the hostname, local needs neither.
-#
-#   %(?.A.B)          A if last exit status was 0, else B
-#   %F{n}...%f        foreground color n
-#   %U...%u           underline
-#   %B...%b           bold
-#   %50<...<%~%<<     cwd, truncated to 50 chars with a leading ellipsis
+# Prompt. Three variants: root is a warning, SSH shows the hostname, local needs neither.
 
 # root
 if [[ $EUID -eq 0 ]]; then

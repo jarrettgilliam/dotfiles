@@ -1,17 +1,6 @@
 #!/usr/bin/env bash
-# Measure shell startup time, and show where it goes.
-#
-#   ./bench.sh                 both shells, 10 runs each
-#   ./bench.sh --shell bash    one shell only (zsh | bash | both)
-#   ./bench.sh -n 20           run count
-#   ./bench.sh --breakdown     per-file cost
-#   ./bench.sh --compare       login+interactive vs interactive vs login vs bare
-#   ./bench.sh --profile       zprof function-level profile, zsh only
-#
-# Written in bash, and measures zsh too: bash exists on every machine this
-# config runs on, and its `time` builtin times a zsh just as accurately as a
-# bash. Kept compatible with bash 3.2, so it also runs under macOS's /bin/bash
-# -- which means no $EPOCHREALTIME and no associative arrays.
+
+# Written in bash, but also measures zsh. Keep compatible with bash 3.2.
 
 set -u
 
@@ -22,7 +11,14 @@ mode=time
 want_shell=both
 
 usage() {
-    sed -n '2,13p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
+    echo "Measure shell startup time, and show where it goes."
+    echo ""
+    echo "  ./bench.sh                 both shells, 10 runs each"
+    echo "  ./bench.sh --shell bash    one shell only (zsh | bash | both)"
+    echo "  ./bench.sh -n 20           run count"
+    echo "  ./bench.sh --breakdown     per-file cost"
+    echo "  ./bench.sh --compare       login+interactive vs interactive vs login vs bare"
+    echo "  ./bench.sh --profile       zprof function-level profile, zsh only"
 }
 
 while [ $# -gt 0 ]; do
@@ -46,13 +42,7 @@ case "$runs" in
     ''|*[!0-9]*) echo "-n must be a positive integer (got: $runs)" >&2; exit 2 ;;
 esac
 
-# ---------------------------------------------------------------------------
-# Timing core.
-#
-# bash 3.2 has no $EPOCHREALTIME, so time subprocesses with the `time` builtin
-# instead. TIMEFORMAT='%3R' gives wall-clock seconds to three decimals, which
-# is millisecond resolution -- enough for startups measured in tens of ms.
-# ---------------------------------------------------------------------------
+# %3R is wall-clock seconds to three decimals: enough for startups in tens of ms
 TIMEFORMAT='%3R'
 
 # time_once <command...> -> seconds, as a decimal string
@@ -62,8 +52,8 @@ time_once() {
 
 # time_min <command...> -> milliseconds, minimum across $runs
 #
-# The minimum, not the mean: it is the least noisy estimate of the real cost,
-# which matters for the breakdown, where small differences are subtracted.
+# The minimum, not the mean: least noisy estimate of the real cost, which
+# matters for the breakdown, where small differences are subtracted
 time_min() {
     local i t best=
     "$@" >/dev/null 2>&1        # warm the filesystem cache
@@ -157,7 +147,6 @@ breakdown() {
 
     local tmp
     tmp=$(mktemp -d)
-    # Clean up even if interrupted.
     trap 'rm -rf "$tmp"' EXIT INT TERM
 
     echo ""
@@ -237,9 +226,6 @@ ablation_time() {
     fi
 }
 
-# ---------------------------------------------------------------------------
-# Modes
-# ---------------------------------------------------------------------------
 case "$mode" in
     time)
         echo "Startup time over $runs runs:"
@@ -284,9 +270,7 @@ case "$mode" in
         tmp=$(mktemp -d)
         trap 'rm -rf "$tmp"' EXIT INT TERM
 
-        # Same two-step as the breakdown: the real .zshenv must run in its own
-        # slot so /etc/zshrc sees SHELL_SESSIONS_DISABLE, then ZDOTDIR points
-        # back here so zsh reads the wrapper below rather than the real .zshrc.
+        # Same two-step as ablation_time
         {
             echo "source '$SOURCE_DIR/zsh/.zshenv'"
             echo "ZDOTDIR='$tmp'"

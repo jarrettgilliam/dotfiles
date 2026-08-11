@@ -1,10 +1,6 @@
 # Git branch/status in the right-hand prompt, computed asynchronously.
-#
 # Adapted from https://github.com/vincentbernat/zshrc
-#
-# Numbered 41 rather than 21 (next to the prompt) because it depends on
-# zsh-async being loaded by 40-plugins.zsh. check-for-changes runs a full
-# `git status`, which is slow in large repositories -- hence the worker.
+# Needs to run after zsh-async in 40-plugins.zsh.
 
 # Skipped for root, which has no business running git in someone's tree.
 if [[ $EUID -ne 0 ]] && (( $+functions[async_start_worker] )); then

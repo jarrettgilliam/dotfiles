@@ -1,9 +1,5 @@
-# Key bindings.
-#
-# Both sets are bound unconditionally: the escape sequences do not collide, and
-# binding a sequence the local terminal never emits is harmless. That is
-# cheaper than detecting the terminal, and it means one config works over SSH
-# from any of these machines to any other.
+# Key bindings. Both sets are bound unconditionally: the sequences do not
+# collide, and binding one the local terminal never emits is harmless
 
 # macOS / Terminal.app
 bindkey '^[b' backward-word

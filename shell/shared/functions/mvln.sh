@@ -2,10 +2,8 @@
 #
 #   mvln <source1> [source2...] <destination>
 #
-# NOTE: the relative-path branch uses `realpath -m --relative-to`, which is
-# GNU coreutils only. macOS ships a BSD realpath without those flags, so
-# relative destinations will fail there unless coreutils is installed.
-# Absolute destinations work everywhere.
+# Relative destinations need GNU coreutils for `realpath -m --relative-to`;
+# absolute destinations work everywhere.
 mvln() {
     if [ $# -lt 2 ]; then
         printf 'Usage: mvln <source1> [source2...] <destination>\n' >&2
