@@ -54,6 +54,10 @@ files an application writes itself — `~/.vim/.netrwhist`, swap files, spell
 dictionaries — land in your real home directory instead of turning up as
 untracked changes here.
 
+Targets are relative to the link's own directory when this repository lives
+under `$HOME`, so a `$HOME` that moves — a restored backup, a different mount
+point — keeps working. A checkout outside `$HOME` gets absolute targets instead.
+
 **2. Its own `install.sh`** — if a package contains an executable `install.sh`,
 that script runs instead and is entirely responsible for the package. `shell`
 does this: zsh is not installed file by file, but by pointing `ZDOTDIR` at the

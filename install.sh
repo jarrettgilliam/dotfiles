@@ -2,7 +2,10 @@
 
 set -u
 
-DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DOTFILES_DIR="$(cd -P "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+DOTFILES_ROOT="$DOTFILES_DIR"
+. "$DOTFILES_DIR/install-lib.sh"
 
 # Anything this installer displaces is renamed to
 #
@@ -121,12 +124,12 @@ ensure_real_dirs() {
                     *" $path "*) ;;
                     *)
                         reported_dirs+=("$path")
-                        echo "   would replace symlinked directory ${path/#$HOME/~} (-> $(readlink "$path"))"
+                        echo "   would replace symlinked directory $(tildify "$path") (-> $(readlink "$path"))"
                         ;;
                 esac
             else
                 mv "$path" "$path.$DOTFILES_BAK_SUFFIX"
-                echo "   💾 Replaced symlinked directory ${path/#$HOME/~} -> $(basename "$path").$DOTFILES_BAK_SUFFIX"
+                echo "   💾 Replaced symlinked directory $(tildify "$path") -> $(basename "$path").$DOTFILES_BAK_SUFFIX"
                 backed_up=$((backed_up + 1))
             fi
         fi
@@ -144,9 +147,11 @@ ensure_real_dirs() {
 # spell dictionaries -- land in the real home directory instead of showing up
 # as untracked changes in this repository.
 link_file() {
-    local src="$1" dest="$2"
+    local src="$1" dest="$2" target
 
-    if [ -L "$dest" ] && [ "$(readlink "$dest")" = "$src" ]; then
+    target="$(link_target "$src" "$dest")"
+
+    if [ -L "$dest" ] && [ "$(readlink "$dest")" = "$target" ]; then
         already=$((already + 1))
         return
     fi
@@ -155,9 +160,9 @@ link_file() {
 
     if [ $DRY_RUN -eq 1 ]; then
         if [ $ancestor_symlink -eq 0 ] && [ -e "$dest" ] && [ ! -L "$dest" ]; then
-            echo "   would back up ${dest/#$HOME/~} -> $(basename "$dest").$DOTFILES_BAK_SUFFIX"
+            echo "   would back up $(tildify "$dest") -> $(basename "$dest").$DOTFILES_BAK_SUFFIX"
         fi
-        echo "   would link    ${dest/#$HOME/~} -> ${src/#$DOTFILES_DIR/.}"
+        echo "   would link    $(tildify "$dest") -> $target"
         linked=$((linked + 1))
         return
     fi
@@ -171,8 +176,8 @@ link_file() {
         backed_up=$((backed_up + 1))
     fi
 
-    ln -sfn "$src" "$dest"
-    echo "   ✅ ${dest/#$HOME/~}"
+    ln -sfn "$target" "$dest"
+    echo "   ✅ $(tildify "$dest")"
     linked=$((linked + 1))
 }
 
