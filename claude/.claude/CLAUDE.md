@@ -1,0 +1,7 @@
+Be extremely concise. Sacrifice grammar for the sake of concision.
+
+Do not stage, commit, push, rebase, merge, or perform any other actions that change anything in the ~/.git folder for the repo unless I specifically ask in my prompt. Consider git to be read-only. Keep this in mind when performing other git actions that may inadvertently change git or it's index. Consider using `git show <commit>:<path> > <path>` or `git restore --worktree --source=<commit>` when restoring files.
+
+If you need the source code for something and you cannot find it, don't attempt to decompile assemblies. Instead just ask and I will tell you where to look.
+
+When writing or editing code, don't accumulate comments. A comment earns its place only by naming a plausible wrong alternative and saying why it lost. Don't restate the code, the signature, the language's semantics, the test name, or the assertion below it. Don't repeat what a design doc, README, or `--help` text already says -- point to it instead. No historical narrative ("this used to...", "the gap this change closed") -- that's git's job. No facts that rot (timings, counts). Prefer a named constant or a better name over a comment explaining a magic value or a cryptic one. When you trim a comment, re-read the neighbors you stranded.
