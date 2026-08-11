@@ -270,7 +270,9 @@ case "$mode" in
         tmp=$(mktemp -d)
         trap 'rm -rf "$tmp"' EXIT INT TERM
 
-        # Same two-step as ablation_time
+        # Same two-step as the breakdown: the real .zshenv must run in its own
+        # slot so /etc/zshrc sees SHELL_SESSIONS_DISABLE, then ZDOTDIR points
+        # back here so zsh reads the wrapper below rather than the real .zshrc.
         {
             echo "source '$SOURCE_DIR/zsh/.zshenv'"
             echo "ZDOTDIR='$tmp'"
