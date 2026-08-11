@@ -15,8 +15,5 @@ export XDG_CACHE_HOME
 ZSH_CACHE_DIR=$XDG_CACHE_HOME/zsh
 DOTFILES_CACHE_DIR=$ZSH_CACHE_DIR
 
-# Terminal.app writes per-session state to "${ZDOTDIR:-$HOME}/.zsh_sessions",
-# which now resolves inside this repository. SHELL_SESSION_DIR is assigned
-# unconditionally by /etc/zshrc_Apple_Terminal, so disabling is the only lever.
-# Costs per-tab scrollback restore on reopen; $HISTFILE is unaffected.
+# Opt out of session save/restore in macOS terminal
 SHELL_SESSIONS_DISABLE=1
