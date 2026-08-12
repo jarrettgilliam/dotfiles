@@ -35,5 +35,27 @@
     "mode": "hold"
   },
   "autoMemoryEnabled": false,
-  "voiceEnabled": true
+  "voiceEnabled": true,
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash|Grep",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/jarrett/.local/bin/graphify hook-guard search"
+          }
+        ]
+      },
+      {
+        "matcher": "Read|Glob",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/jarrett/.local/bin/graphify hook-guard read"
+          }
+        ]
+      }
+    ]
+  }
 }
