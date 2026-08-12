@@ -16,6 +16,11 @@
       "CronList"
     ]
   },
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/statusline.sh",
+    "padding": 0
+  },
   "model": "claude-opus-5",
   "outputStyle": "Concise",
   "disableClaudeAiConnectors": true,
