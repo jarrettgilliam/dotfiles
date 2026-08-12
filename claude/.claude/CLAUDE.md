@@ -35,6 +35,6 @@ naming a specific upstream issue and a removal trigger are all fine. Refactoring
 is never a reason a surprise guard dies -- it explains one line and follows that
 line. When you trim a comment, re-read the neighbors you stranded.
 
-# graphify
-- **graphify** (`~/.claude/skills/graphify/SKILL.md`) - any input to knowledge graph. Trigger: `/graphify`
-When the user types `/graphify`, use the installed graphify skill or instructions before doing anything else.
+# graphify - **graphify** (`~/.claude/skills/graphify/SKILL.md`) - any input to
+knowledge graph. Trigger: `/graphify` When the user types `/graphify`, use the
+installed graphify skill or instructions before doing anything else.
