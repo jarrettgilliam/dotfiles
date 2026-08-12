@@ -1,5 +1,3 @@
-Be extremely concise. Sacrifice grammar for the sake of concision.
-
 Do not stage, commit, push, rebase, merge, or perform any other actions that
 change anything in the ~/.git folder for the repo unless I specifically ask in
 my prompt. Consider git to be read-only. Keep this in mind when performing other

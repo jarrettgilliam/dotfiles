@@ -17,6 +17,7 @@
     ]
   },
   "model": "claude-opus-5",
+  "outputStyle": "Concise",
   "disableClaudeAiConnectors": true,
   "disableBundledSkills": true,
   "disableRemoteControl": true,
