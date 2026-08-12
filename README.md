@@ -27,8 +27,8 @@ The distinctive final extension exists so that all of them, from every package
 and every run, can be found and removed with one command:
 
 ```sh
-find ~/.[^.]* -maxdepth 3 -name '*.dotfiles-bak' -print  2>/dev/null   # review
-find ~/.[^.]* -maxdepth 3 -name '*.dotfiles-bak' -delete 2>/dev/null   # delete
+find ~/.[^.]* -maxdepth 3 -name '*.dotfiles-bak' -print  # review
+find ~/.[^.]* -maxdepth 3 -name '*.dotfiles-bak' -delete # delete
 ```
 
 Package installers use the same convention; the top-level script exports

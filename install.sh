@@ -290,7 +290,7 @@ if [ -n "$(find ~/.[^.]* -maxdepth 3 -name "*.$DOTFILES_BAK_SUFFIX" -print -quit
     # the same entries. 2>/dev/null covers directories the OS refuses to
     # traverse, such as ~/.Trash on macOS.
     echo "Displaced files were kept as *.dotfiles-bak. Delete them when ready."
-    echo "   find ~/.[^.]* -maxdepth 3 -name '*.dotfiles-bak' -print  2>/dev/null   # review"
-    echo "   find ~/.[^.]* -maxdepth 3 -name '*.dotfiles-bak' -delete 2>/dev/null   # delete"
+    echo "   find ~/.[^.]* -maxdepth 3 -name '*.dotfiles-bak' -print  # review"
+    echo "   find ~/.[^.]* -maxdepth 3 -name '*.dotfiles-bak' -delete # delete"
 fi
 echo "-------------------------------------------------------"
