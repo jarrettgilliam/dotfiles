@@ -21,3 +21,5 @@
 # Untracked machine specific config. It must be loaded last. Not required by git
 [include]
 	path = ~/.gitconfig.local
+[push]
+	autoSetupRemote = true
