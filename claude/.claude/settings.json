@@ -16,7 +16,7 @@
       "CronList"
     ]
   },
-  "statusLine": {
+    "statusLine": {
     "type": "command",
     "command": "~/.claude/statusline.sh",
     "padding": 0
@@ -43,7 +43,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/Users/jarrett/.local/bin/graphify hook-guard search"
+            "command": "~/.local/bin/graphify hook-guard search"
           }
         ]
       },
@@ -52,7 +52,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/Users/jarrett/.local/bin/graphify hook-guard read"
+            "command": "~/.local/bin/graphify hook-guard read"
           }
         ]
       }
