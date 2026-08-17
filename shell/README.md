@@ -32,7 +32,7 @@ bench.sh        Startup benchmark for both shells.
 shared/         Sourced by BOTH shells.
   lib.sh        has_command, path_prepend/append, cached_eval, is_interactive
   00-options.sh Environment variables and ls colors
-  05-environment.sh  ~/.shell.local, Homebrew, PATH, lazy nvm, os/ + hosts/
+  05-environment.sh  Homebrew, PATH, lazy nvm, os/ + ~/.shell.local + hosts/
   50-aliases.sh Every portable alias; sources functions/
   functions/    One function per file, plain definitions
   os/           Per-OS config: environment, PATH and aliases
@@ -89,11 +89,12 @@ zsh:   ~/.zshenv → ZDOTDIR → .zshrc → shared/lib.sh → zsh/conf.d/*.zsh
 bash:  ~/.bash_profile → ~/.bashrc → shared/lib.sh → bash/conf.d/*.bash
 
 both:  NN-*.{zsh,bash} → shared/NN-*.sh, then the shell-specific part
-                └─ 05-environment → ~/.shell.local → os/$OS.sh → hosts/$MACHINE.sh
+                └─ 05-environment → os/$OS.sh → ~/.shell.local → hosts/$MACHINE.sh
 ```
 
-`~/.shell.local` is read first because it can set `SHELL_MACHINE`, which selects
-the host file. It holds secrets, so it lives outside the repository — that makes
+`~/.shell.local` is read after `os/` so it can call the functions defined there,
+and before `hosts/` because it can set `SHELL_MACHINE`, which selects the host
+file. It holds secrets, so it lives outside the repository — that makes
 committing it impossible rather than merely discouraged. Both shells read it, so
 keep it compatible with both.
 

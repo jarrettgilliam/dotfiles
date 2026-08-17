@@ -1,9 +1,5 @@
 # Environment: secrets, PATH, package managers, and the machine layers.
 
-# Read first: it can set SHELL_MACHINE, which selects the host file at the
-# bottom of this file.
-[ -r "$HOME/.shell.local" ] && . "$HOME/.shell.local"
-
 # Homebrew (macOS AND Linux)
 # Skipping this when HOMEBREW_PREFIX is already set saves nested shells a
 # subprocess, but also means they never see the fpath entry brew emits.
@@ -60,6 +56,10 @@ esac
 if [ -n "$_os" ] && [ -r "$DOTFILES_SHELL/shared/os/$_os.sh" ]; then
     . "$DOTFILES_SHELL/shared/os/$_os.sh"
 fi
+
+# After os/, so it can call the functions defined there. Before hosts/, because
+# it can set SHELL_MACHINE, which selects the host file.
+[ -r "$HOME/.shell.local" ] && . "$HOME/.shell.local"
 
 # Load machine specific things
 if [ -n "${SHELL_MACHINE-}" ]; then
