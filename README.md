@@ -15,6 +15,9 @@ symlink.
 Safe to re-run. An existing correct symlink is left alone; anything real that is
 in the way is renamed before being replaced, so nothing is lost.
 
+> If symlinks are unavailable the installer writes a **copy** instead of failing. Re-run `./install.sh`
+> to get updates. Backups are only created when the files have different contents.
+
 ### Cleaning up backups
 
 Every file this repository displaces is renamed to
@@ -31,8 +34,14 @@ find ~/.[^.]* -maxdepth 3 -name '*.dotfiles-bak' -print  # review
 find ~/.[^.]* -maxdepth 3 -name '*.dotfiles-bak' -delete # delete
 ```
 
-Package installers use the same convention; the top-level script exports
-`DOTFILES_BAK_SUFFIX` so a whole run shares one timestamp.
+## Machine-local overrides
+
+Two files, both outside the tree and untracked:
+
+| File | Holds |
+|---|---|
+| `~/.shell.local` | `SHELL_MACHINE`, secrets, anything specific to one box. Read by bash and zsh. |
+| `~/.gitconfig.local` | git settings for one machine, including a different identity |
 
 ## How a package is installed
 
@@ -67,8 +76,8 @@ Submodules are **not** a package's concern. The top-level script checks out
 every submodule in the repository before installing anything, so a package that
 gains one later needs no installer change and there is no list to keep in sync.
 
-A package installer should be idempotent and should honor `DOTFILES_DRY_RUN=1`
-by reporting what it would do without doing it.
+A package installer sources `install-lib.sh` and gets idempotency, backups,
+`--dry-run` and the copy fallback from it. See "Writing a package installer".
 
 ## Adding a package
 
@@ -80,18 +89,47 @@ by reporting what it would do without doing it.
 There is no list to register it in: `install.sh` discovers packages by looking
 for top-level directories.
 
-## Machine-local overrides
+### Writing a package installer
 
-Two files, both outside the tree so that committing them is impossible rather
-than merely discouraged:
+Only for a package that symlinking files cannot express. Three lines of header,
+then say what the package needs:
 
-| File | Holds |
+```bash
+#!/bin/bash
+set -u
+
+PKG_DIR="$(cd -P "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+. "$PKG_DIR/../install-lib.sh"
+
+link_home "$PKG_DIR/.tmux.conf"
+ensure_dir "$HOME/.tmux/plugins"
+
+write_file --no-clobber "$HOME/.tmux.local.conf" <<'EOF'
+# Machine-local tmux settings. Not tracked in git.
+EOF
+```
+
+Every verb below already honors `DOTFILES_DRY_RUN`, backs up whatever it
+displaces, falls back to a copy where symlinks are unavailable, and prints one
+line per path — so an installer contains only its own decisions, and
+`./install.sh --dry-run` covers it without the script doing anything special.
+
+| Verb | Does |
 |---|---|
-| `~/.shell.local` | `SHELL_MACHINE`, secrets, anything specific to one box. Read by bash and zsh. |
-| `~/.gitconfig.local` | git settings for one machine, including a different identity |
+| `link_file [--no-copy] <src> <dest>` | Idempotent symlink. `--no-copy` returns 1 rather than copying, for a file that would be wrong as a copy. |
+| `link_home [--no-copy] <src> [name]` | `link_file` into `$HOME`; `name` defaults to the basename and may contain slashes. |
+| `mirror_tree <package-dir>` | Link every file in the package to the matching path under `$HOME` — what a package with no installer gets. |
+| `write_file [--no-clobber] [--not-linked] <path> [mode]` | Write from stdin. `--no-clobber` keeps an existing file, correcting only a mode looser than `mode`. Identical content is left alone. |
+| `ensure_dir <dir>...` | Create directories. |
+| `backup_file <path>` | Move a path aside; sets `DOTFILES_LAST_BACKUP`. |
+| `tildify <path>` | Shorten a path under `$HOME`, for your own messages. |
 
-`.gitignore` additionally covers shell history, completion caches and installer
-backups, as defense in depth.
+Two flags are there to read: `DOTFILES_CHANGED`, set when anything was changed
+(or in a dry run would have been), and `DOTFILES_FAILED`.
+
+Exit non-zero if something genuinely failed; the top-level installer treats that
+as fatal for the whole run. Print only your own package's portion — the summary
+and the backup notice belong to the top-level script.
 
 ### A machine with a different git identity
 
