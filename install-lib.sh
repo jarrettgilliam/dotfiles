@@ -103,7 +103,13 @@ _dotfiles_link_target() {
 
 # Permission bits of <path> as octal digits, empty if it cannot be read.
 _dotfiles_file_mode() {
-    stat -f '%Lp' "$1" 2>/dev/null || stat -c '%a' "$1" 2>/dev/null
+    local mode
+    for mode in "$(stat -c '%a' "$1" 2>/dev/null)" "$(stat -f '%Lp' "$1" 2>/dev/null)"; do
+        case "$mode" in
+            "" | *[!0-7]*) ;;
+            *) printf '%s\n' "$mode"; return 0 ;;
+        esac
+    done
 }
 
 # True when <actual> grants anything <wanted> does not.
