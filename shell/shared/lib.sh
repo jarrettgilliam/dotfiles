@@ -1,5 +1,4 @@
 # Helpers used by the shared config and by both shells' own files.
-# Sourced first, before anything in conf.d.
 
 # has_command <name>
 #
@@ -26,8 +25,8 @@ current_shell() {
 
 # path_prepend / path_append <dir>
 #
-# The surrounding colons match whole entries only, so /usr/bin is not
-# considered present because /usr/bin/local is
+# The surrounding colons match whole entries only, so /usr/bin is not considered
+# present because /usr/bin/local is.
 path_prepend() {
     [ -d "$1" ] || return 0
     case ":$PATH:" in

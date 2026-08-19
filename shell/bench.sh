@@ -89,7 +89,7 @@ report() {
 
 have() { command -v "$1" >/dev/null 2>&1; }
 
-# shells_to_test -> the requested shells that are actually installed
+# shells_to_test -> the requested shells that are installed
 shells_to_test() {
     local sh
     for sh in zsh bash; do
@@ -179,7 +179,6 @@ breakdown() {
 
 # ablation_time <shell> <tmpdir> <k> <files>  -> milliseconds
 #
-# Builds an rc that loads lib.sh plus the given files, and times a startup.
 # The scaffolding mirrors what each shell really does, which is what makes the
 # numbers comparable to a normal startup.
 ablation_time() {
@@ -195,7 +194,7 @@ ablation_time() {
         # instead of ~/.zshenv, so without this the real one never runs:
         # ZSH_CACHE_DIR is unset, and -- the expensive part -- macOS's
         # /etc/zshrc_Apple_Terminal does not see SHELL_SESSIONS_DISABLE and
-        # starts its session save/restore, adding ~14ms to every measurement.
+        # starts its session save/restore.
         #
         # It sets ZDOTDIR to the real directory, so point it back here
         # afterwards or zsh would read the real .zshrc next and load the whole

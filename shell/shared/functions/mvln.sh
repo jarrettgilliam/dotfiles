@@ -1,7 +1,4 @@
 # Move one or more files/folders, leaving a symlink at each original location.
-#
-#   mvln <source1> [source2...] <destination>
-#
 # Relative destinations need GNU coreutils for `realpath -m --relative-to`;
 # absolute destinations work everywhere.
 mvln() {

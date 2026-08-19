@@ -2,8 +2,8 @@
 
 . "$DOTFILES_SHELL/shared/00-options.sh"
 
-# History cannot be shared with zsh
-# histappend and `history -a; history -n` in PROMPT_COMMAND (20-prompt.bash) work together
+# History cannot be shared with zsh. histappend is half of a pair; see
+# 20-prompt.bash.
 HISTFILE="$HOME/.bash_history"
 HISTSIZE=50000
 HISTFILESIZE=50000

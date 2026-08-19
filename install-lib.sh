@@ -1,9 +1,4 @@
-# Installer library, sourced by ./install.sh and by any <package>/install.sh.
-# Sourced, never run.
-#
-# Every verb honors DOTFILES_DRY_RUN, backs up whatever it displaces, and
-# reports one line per path, so a package installer contains only its own
-# decisions. See README.md, "Writing a package installer".
+# Installer library. Sourced, never run.
 
 DOTFILES_ROOT="$(cd -P "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
@@ -14,13 +9,8 @@ DOTFILES_HOME_REAL="$(cd -P "$HOME" && pwd)"
 
 DOTFILES_DRY_RUN="${DOTFILES_DRY_RUN:-0}"
 
-# Anything an installer displaces is renamed to
-#
-#     <original name>.<timestamp>.dotfiles-bak
-#
-# The extensions are all the same so they're findable and removable with one
-# command. The top-level installer exports this so a whole run shares one
-# timestamp; the default is for a package installer run on its own.
+# The top-level installer exports this so a whole run shares one timestamp; the
+# default is for a package installer run on its own.
 DOTFILES_BAK_SUFFIX="${DOTFILES_BAK_SUFFIX:-$(date +%Y%m%d%H%M%S).dotfiles-bak}"
 
 # Set when any operation fails, so the top-level installer can exit non-zero.
@@ -32,10 +22,10 @@ DOTFILES_CHANGED=0
 
 # tildify <path>
 #
-# Shorten a path under $HOME for display. A function rather than
-# ${path/#$HOME/~} because there is no spelling of that substitution which works
-# in both bash 3.2 and bash 5: 5 tilde-expands an unquoted replacement back into
-# $HOME, and 3.2 prints the backslash of an escaped one.
+# A function rather than ${path/#$HOME/~} because there is no spelling of that
+# substitution which works in both bash 3.2 and bash 5: 5 tilde-expands an
+# unquoted replacement back into $HOME, and 3.2 prints the backslash of an
+# escaped one.
 tildify() {
     case "$1" in
         "$HOME") printf '%s\n' "~" ;;

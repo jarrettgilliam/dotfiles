@@ -1,5 +1,5 @@
-# Warn about $HOME startup files that ZDOTDIR has made inert -- see README.md.
-# The marker is exported, so tmux panes and nested shells stay quiet
+# Warn about $HOME startup files that ZDOTDIR has made inert. The marker is
+# exported, so tmux panes and nested shells stay quiet.
 
 if [[ -z $ZSH_ORPHAN_RC_CHECKED ]]; then
     export ZSH_ORPHAN_RC_CHECKED=1

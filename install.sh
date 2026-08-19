@@ -5,7 +5,6 @@ set -u
 DOTFILES_DIR="$(cd -P "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . "$DOTFILES_DIR/install-lib.sh"
 
-# One timestamp for the whole run, package installers included.
 export DOTFILES_BAK_SUFFIX
 
 DRY_RUN=0
@@ -71,13 +70,9 @@ else
     done
 fi
 
-# Check out every submodule in the repository.
-#
-# Done here, once, rather than per package: submodules are a property of the
-# repository, so a package that gains one later needs no installer change and
-# no list to keep in sync. Deliberately not scoped by pathspec -- a pathspec
-# naming a package that is not committed yet fails with "did not match any
-# file(s) known to git", which would break exactly when adding a package.
+# Deliberately not scoped by pathspec: a pathspec naming a package that is not
+# committed yet fails with "did not match any file(s) known to git", which would
+# break exactly when adding a package.
 init_submodules() {
     local count pending
 
@@ -91,9 +86,7 @@ init_submodules() {
     echo ""
     echo "🚀 Checking out submodules..."
 
-    # git submodule status marks anything not checked out at the recorded commit
-    # with a leading -, + or U. None of those means there is nothing to do, and
-    # the update is skipped rather than re-reported as work.
+    # Anything not checked out at the recorded commit is marked -, + or U.
     pending=$(git -C "$DOTFILES_DIR" submodule status --recursive 2>/dev/null | grep -c '^[-+U]')
 
     if [ "$pending" -eq 0 ]; then
@@ -115,25 +108,20 @@ init_submodules() {
     fi
 }
 
-# Did this run displace anything?
-#
 # Matching this run's exact suffix catches backups made inside a package
 # installer's own process, which no variable here could see, and cannot be
-# fooled by backups left over from an earlier run. -print -quit stops at the
-# first hit, so this costs a few milliseconds.
+# fooled by backups left over from an earlier run.
 #
-# Searching only $HOME's dot entries is fast and identical on every platform: it
-# never descends into ~/Library, which on macOS is slow and noisy with
-# permission errors. The backups are not all dotfiles themselves --
-# ~/.config/git/ignore.<stamp>.dotfiles-bak is not -- but the top-level entry
-# always starts with a dot, which holds as long as packages install to dot
-# paths.
+# Searching only $HOME's dot entries never descends into ~/Library, which on
+# macOS is slow and noisy with permission errors. The backups are not all
+# dotfiles themselves -- ~/.config/git/ignore.<stamp>.dotfiles-bak is not -- but
+# the top-level entry always starts with a dot, which holds as long as packages
+# install to dot paths.
 #
 # [^.] rather than the more usual [!.]: interactive zsh applies history
 # expansion to the `!` before globbing ever happens, so a pasted [!.] dies with
 # "event not found". Both shells accept [^.], and it matches exactly the same
-# entries. 2>/dev/null covers directories the OS refuses to traverse, such as
-# ~/.Trash on macOS.
+# entries.
 report_displaced() {
     if [ $DRY_RUN -eq 1 ]; then
         # A package installer's would-be backups happen in another process and

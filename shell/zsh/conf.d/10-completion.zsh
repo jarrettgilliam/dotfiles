@@ -4,7 +4,6 @@
 
 typeset -U fpath
 
-# Our own functions
 fpath=($ZDOTDIR/functions $fpath)
 
 # Homebrew's site-functions. `brew shellenv` adds this itself, but

@@ -1,6 +1,4 @@
 #!/bin/bash
-# Install the coding agent configuration. See README.md.
-# Safe to re-run. Called by the top-level install.sh, or directly.
 
 set -u
 

@@ -1,5 +1,3 @@
-# Completion. Sourced if present, silently skipped otherwise
-
 for _bc in \
     "${HOMEBREW_PREFIX:-/opt/homebrew}/etc/profile.d/bash_completion.sh" \
     /usr/share/bash-completion/bash_completion \

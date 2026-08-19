@@ -35,6 +35,27 @@ Everything else goes.
    module-internal symbols get none. Document this symbol's contract, never the
    wrapped thing's — inherit (`<inheritdoc cref="..."/>`, `{@inheritDoc}`) and
    write only the delta.
+5. **A usage synopsis, where the language has no signature to read.** Shell
+   functions, variadic C, anything taking `**kwargs` or an options bag: `# mvln
+   <source>... <destination>` is the only place the parameters are named at all,
+   so it is the signature, not a comment about one. This does not license
+   restating a synopsis the language already spells out.
+6. **Links that are already there.** A URL, an issue number, the source a
+   snippet was adapted from, the page a magic constant came from. A link is not a
+   copy: it does not drift, and it is often the only route back to why a value is
+   what it is. Never delete one merely for being a link — but do delete the prose
+   copied out from behind it, and never add a link that was not already there.
+   A bare in-repo pointer (`See README.md`) is not a link; it is trivia, and goes.
+7. **Section separators.** A banner or a one-line label marking where one part
+   of a file ends and the next begins, in a file long enough to navigate rather
+   than read. It orients; it does not explain. Keep it terse and structural --
+   the moment it starts justifying the section it stops being a separator and
+   faces the rules below.
+8. **Commented-out code the reader might switch back on.** An alternative theme,
+   a disabled option, a config line kept beside its live sibling. That is a
+   toggle, not an explanation, and deleting it destroys the alternative rather
+   than a comment about one. Commented-out code with no live sibling -- a dead
+   branch, a superseded implementation -- is still git's job and still goes.
 
 ## Delete
 
@@ -42,8 +63,8 @@ Everything else goes.
   none.
 - **Trivia.** Restating the code, the signature, or the language's semantics.
 - **Anything an external doc owns.** A man page, library reference, design doc,
-  README, or the program's own `--help`. Don't copy it and don't point to it —
-  assume the reader has read it.
+  README, or the program's own `--help`. Don't copy it, and don't add a pointer
+  to it — assume the reader has read it. An existing link stays; see Survivors.
 - **Duplication.** Same rationale at the definition, the call site, and the test.
   Keep the definition's copy; elsewhere `// See <function>.`
 - **Historical narrative.** "This used to…", "the old suite did…". Git holds it.

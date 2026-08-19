@@ -1,6 +1,4 @@
 #!/bin/bash
-# Install the shell configuration. See README.md.
-# Safe to re-run. Called by the top-level install.sh, or directly.
 
 set -u
 
@@ -48,7 +46,7 @@ for d in "$ZDOTDIR_SRC"/plugins/*/; do
     fi
 done
 
-# Cache directories, one per shell. See cached_eval in shared/lib.sh.
+# One per shell. See cached_eval in shared/lib.sh.
 CACHE_ROOT="${XDG_CACHE_HOME:-$HOME/.cache}"
 ensure_dir "$CACHE_ROOT/zsh" "$CACHE_ROOT/bash"
 
@@ -62,9 +60,9 @@ SHELL_MACHINE=$(scutil --get LocalHostName 2>/dev/null || hostname -s 2>/dev/nul
 # export SOME_SECRET='...'
 EOF
 
-# Nothing below is worth saying about a run that changed nothing: the shell in
-# this terminal is already the installed one, so there is no new terminal to
-# open and nothing to roll back.
+# Nothing below applies to a run that changed nothing: the shell in this
+# terminal is already the installed one, so there is no new terminal to open and
+# nothing to roll back.
 if [ "$DOTFILES_DRY_RUN" = 1 ] || [ "$DOTFILES_CHANGED" = 0 ]; then
     exit "$DOTFILES_FAILED"
 fi

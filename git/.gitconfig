@@ -21,6 +21,6 @@
 [push]
 	autoSetupRemote = true
 	
-# Untracked machine specific config. It must be loaded last. Not required by git.
+# Optional, untracked machine specific config. Must be loaded last.
 [include]
 	path = ~/.gitconfig.local
