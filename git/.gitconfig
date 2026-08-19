@@ -4,6 +4,7 @@
 	lg = log --graph --oneline --decorate
 	unstage = restore --staged
 	br-rm = "!f() {\n  current=$(git branch --show-current);\n  [ -z \"$current\" ] && { echo \"Not on a branch\"; return 1; };\n  target=$(git rev-parse --abbrev-ref origin/HEAD 2>/dev/null | cut -d/ -f2);\n  { [ -z \"$target\" ] || [ \"$target\" = \"HEAD\" ]; } && \\\n    target=$(git show-ref --verify --quiet refs/heads/main && echo main || echo master);\n  [ \"$current\" = \"$target\" ] && { echo \"Already on $target\"; return 1; };\n  git checkout \"$target\" && git branch -d \"$current\";\n}; f"
+	pull-subs = submodule update --remote --merge
 [init]
 	defaultBranch = main
 [fetch]
