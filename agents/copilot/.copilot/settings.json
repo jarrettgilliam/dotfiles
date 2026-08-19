@@ -1,0 +1,27 @@
+{
+  "allowedUrls": [
+    "https://api.nuget.org",
+    "https://raw.githubusercontent.com"
+  ],
+  "model": "claude-opus-5",
+  "voice": {
+    "enabled": true,
+    "selectedModel": "nemotron-3.5-asr-streaming-0.6b-generic-cpu:3"
+  },
+  "footer": {
+    "showDirectory": true,
+    "showBranch": false,
+    "showContextWindow": true,
+    "showQuota": true,
+    "showAiUsed": false,
+    "showAgent": true,
+    "showCodeChanges": false,
+    "showUsername": false,
+    "showSandbox": true,
+    "showYolo": true,
+    "showCiStatus": false,
+    "showSchedules": false,
+    "showPullRequest": false,
+    "showCustom": false
+  }
+}

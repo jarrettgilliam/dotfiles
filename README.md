@@ -68,9 +68,7 @@ under `$HOME`, so a `$HOME` that moves — a restored backup, a different mount
 point — keeps working. A checkout outside `$HOME` gets absolute targets instead.
 
 **2. Its own `install.sh`** — if a package contains an executable `install.sh`,
-that script runs instead and is entirely responsible for the package. `shell`
-does this: zsh is not installed file by file, but by pointing `ZDOTDIR` at the
-repository with a single `~/.zshenv` symlink.
+that script runs instead and is entirely responsible for the package.
 
 Submodules are **not** a package's concern. The top-level script checks out
 every submodule in the repository before installing anything, so a package that
@@ -123,6 +121,7 @@ line per path — so an installer contains only its own decisions, and
 | `ensure_dir <dir>...` | Create directories. |
 | `backup_file <path>` | Move a path aside; sets `DOTFILES_LAST_BACKUP`. |
 | `tildify <path>` | Shorten a path under `$HOME`, for your own messages. |
+| `is_repo_file <path>` | True for a file that belongs to the repository rather than to `$HOME` — `README`, `LICENSE`, `install.sh`, `.gitignore`, and macOS clutter. Skip these when walking a package yourself; `mirror_tree` already does. |
 
 Two flags are there to read: `DOTFILES_CHANGED`, set when anything was changed
 (or in a dry run would have been), and `DOTFILES_FAILED`.

@@ -117,9 +117,14 @@ _dotfiles_mode_looser() {
     [ $(( 8#$1 & ~8#$2 )) -ne 0 ]
 }
 
-_dotfiles_is_repo_file() {
+# is_repo_file <path>
+#
+# True for a file that belongs to the repository rather than to $HOME: this
+# repository's own metadata, and OS noise.
+is_repo_file() {
     case "$(basename "$1")" in
-        install.sh|README|README.*|LICENSE|LICENSE.*|.gitignore|.DS_Store) return 0 ;;
+        install.sh|README|README.*|LICENSE|LICENSE.*|.gitignore) return 0 ;;
+        .DS_Store|._.DS_Store|.localized) return 0 ;;
         *) return 1 ;;
     esac
 }
@@ -326,7 +331,7 @@ mirror_tree() {
     local pkg_dir="${1%/}" src rel
 
     while IFS= read -r src; do
-        _dotfiles_is_repo_file "$src" && continue
+        is_repo_file "$src" && continue
         rel="${src#$pkg_dir/}"
         link_file "$src" "$HOME/$rel"
     done < <(find "$pkg_dir" \( -type f -o -type l \) ! -path '*/.git/*' | sort)
