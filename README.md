@@ -125,6 +125,7 @@ line per path — so an installer contains only its own decisions, and
 | `ensure_dir <dir>...` | Create directories. |
 | `backup_file <path>` | Move a path aside; sets `DOTFILES_LAST_BACKUP`. |
 | `tildify <path>` | Shorten a path under `$HOME`, for your own messages. |
+| `is_repo_file <path>` | True for a file that belongs to the repository rather than to `$HOME` — `README`, `LICENSE`, `install.sh`, `.gitignore`, and macOS clutter. Skip these when walking a package yourself; `mirror_tree` already does. |
 
 Two flags are there to read: `DOTFILES_CHANGED`, set when anything was changed
 (or in a dry run would have been), and `DOTFILES_FAILED`.
