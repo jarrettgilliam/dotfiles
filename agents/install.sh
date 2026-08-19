@@ -22,6 +22,7 @@ install_shared() {
 }
 
 mirror_tree "$PKG_DIR/claude"
+mirror_tree "$PKG_DIR/copilot"
 
 install_shared ".claude/CLAUDE.md"                ".claude/skills"
 install_shared ".copilot/copilot-instructions.md" ".copilot/skills"
