@@ -70,7 +70,9 @@ point — keeps working. A checkout outside `$HOME` gets absolute targets instea
 **2. Its own `install.sh`** — if a package contains an executable `install.sh`,
 that script runs instead and is entirely responsible for the package. `shell`
 does this: zsh is not installed file by file, but by pointing `ZDOTDIR` at the
-repository with a single `~/.zshenv` symlink.
+repository with a single `~/.zshenv` symlink. So does `agents`, where one set of
+instructions and skills is written once and linked into the path each coding
+agent reads it from.
 
 Submodules are **not** a package's concern. The top-level script checks out
 every submodule in the repository before installing anything, so a package that
