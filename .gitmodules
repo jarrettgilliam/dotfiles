@@ -5,3 +5,7 @@
 [submodule "shell/zsh/plugins/zsh-history-substring-search"]
 	path = shell/zsh/plugins/zsh-history-substring-search
 	url = https://github.com/zsh-users/zsh-history-substring-search.git
+[submodule "agents/shared/mattpocock_skills"]
+	path = agents/shared/mattpocock_skills
+	url = https://github.com/mattpocock/skills.git
+	branch = main
