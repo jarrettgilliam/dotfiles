@@ -53,8 +53,11 @@ case "$OSTYPE" in
     msys*|cygwin*) _os=msys   ;;
     *)             _os=       ;;
 esac
-if [ -n "$_os" ] && [ -r "$DOTFILES_SHELL/shared/os/$_os.sh" ]; then
-    . "$DOTFILES_SHELL/shared/os/$_os.sh"
+if [ -n "$_os" ] && [ -d "$DOTFILES_SHELL/shared/os/$_os" ]; then
+    for _osrc in "$DOTFILES_SHELL/shared/os/$_os"/*.sh; do
+        [ -r "$_osrc" ] && . "$_osrc"
+    done
+    unset _osrc
 fi
 
 # After os/, so it can call the functions defined there. Before hosts/, because

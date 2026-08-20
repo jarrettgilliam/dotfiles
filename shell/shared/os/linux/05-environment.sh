@@ -1,4 +1,4 @@
-# Linux, including WSL and the Steam Deck.
+# Covers WSL and the Steam Deck too.
 
 # Distro profile scripts. Banners are suppressed for non-interactive shells so
 # they cannot corrupt the output of `ssh host cmd`
@@ -13,6 +13,3 @@ if [ -d /etc/profile.d ]; then
     done
     unset _profile
 fi
-
-alias poweroff='sudo poweroff'
-alias reboot='sudo reboot'

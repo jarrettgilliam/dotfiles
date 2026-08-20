@@ -35,7 +35,7 @@ shared/         Sourced by BOTH shells.
   05-environment.sh  Homebrew, PATH, lazy nvm, os/ + ~/.shell.local + hosts/
   50-aliases.sh Every portable alias; sources functions/
   functions/    One function per file, plain definitions
-  os/           Per-OS config: environment, PATH and aliases
+  os/<os>/      Per-OS config, one directory per OS, same NN- scheme as conf.d/
   hosts/        Per-machine config: environment, PATH and aliases
 
 zsh/            <- ZDOTDIR
@@ -89,7 +89,7 @@ zsh:   ~/.zshenv → ZDOTDIR → .zshrc → shared/lib.sh → zsh/conf.d/*.zsh
 bash:  ~/.bash_profile → ~/.bashrc → shared/lib.sh → bash/conf.d/*.bash
 
 both:  NN-*.{zsh,bash} → shared/NN-*.sh, then the shell-specific part
-                └─ 05-environment → os/$OS.sh → ~/.shell.local → hosts/$MACHINE.sh
+                └─ 05-environment → os/$OS/*.sh → ~/.shell.local → hosts/$MACHINE.sh
 ```
 
 `~/.shell.local` is read after `os/` so it can call the functions defined there,
@@ -115,6 +115,9 @@ The prefixes encode dependencies, not preference:
 | `90-tools` | External inits last, so they win. |
 | `95-orphan-rc` | zsh only. Warns about `~/.zshrc` and `~/.zprofile`. Last, so it is seen. |
 
+`shared/os/<os>/` reuses the same prefixes for the same reasons, though every
+file in it loads during `05-environment`.
+
 ## Adding configuration
 
 The rule is by *scope*, not by kind. Aliases, PATH entries and environment
@@ -123,7 +126,7 @@ variables all follow the same three tiers:
 | Applies to | Goes in |
 |---|---|
 | Every machine | `shared/`, or a shell's `conf.d/` if it cannot be shared |
-| One OS | `shared/os/<os>.sh` |
+| One OS | `shared/os/<os>/NN-<topic>.sh` |
 | One box | `shared/hosts/<machine>.sh` |
 | Secret, or this machine only | `~/.shell.local` |
 
@@ -142,6 +145,11 @@ if has_command fatrace && [ -d /mnt/tank ]; then ... fi
 containing a normal `name() { ... }` definition. It is picked up automatically;
 there is no list to update. If the shells differ, branch on `$ZSH_VERSION`
 *inside* the one function rather than writing two — see `functions/h.sh`.
+
+An OS-specific function goes in `shared/os/<os>/` instead, alongside that OS's
+other config. `shared/functions/` cannot hold it: that directory loads on every
+OS, and only at `50-aliases`, by which point `hosts/` has already run and could
+not have called it.
 
 **PATH** → `path_append` or `path_prepend` from `shared/lib.sh`, in whichever
 tier applies. They skip directories that do not exist and never add a duplicate.
