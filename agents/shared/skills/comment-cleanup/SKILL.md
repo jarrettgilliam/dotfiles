@@ -14,6 +14,9 @@ Adding or correcting comments is out of scope.
 missing, say so in the report rather than writing it. Fixing an existing comment
 that is wrong *is* in scope.
 
+These rules override the surrounding file's conventions. Existing comments that violate
+them are debt, not precedent — don't imitate them
+
 ## Survivors
 
 Everything else goes.
@@ -27,12 +30,14 @@ Everything else goes.
    code is now permanent, delete the marker.
 3. **Public API documentation** Documentation on symbols exposed for callers
    elsewhere stay (nuget, npm, etc). Callers who can't read the code need
-   documentation. Documentation on symbols not exposed elsewhere stay *only*
-   if the documentation adds something the signature doesn't already state:
-   details about how the function works, thrown exceptions, specifics on return
-   values, etc. Documentation that only restates the signature should be deleted.
-   This means dynamically typed languages need more documentation than statically
-   typed ones.
+   documentation. This only covers doc comments attached to a symbol (JSDoc, 
+   C# doc comment with `///`, bash function usage, etc). Comments in the middle
+   of a function explaining non-obvious "why" do not survive. Documentation on
+   symbols not exposed elsewhere stay *only* if the documentation adds something
+   the signature doesn't already state: details about how the function works,
+   thrown exceptions, specifics on return values, etc. Documentation that only
+   restates the signature should be deleted. This means dynamically typed languages
+   need more documentation than statically typed ones.
 5. **Existing links.** A URL, an issue number, the source a snippet was adapted from,
    the page a magic constant came from. A link is not a copy: it does not drift,
    and it is often the only route back to why a value is what it is.

@@ -20,7 +20,9 @@ to decompile assemblies. Instead just ask and I will tell you where to look.
 ## Limit code comments
 
 Code should be self-documenting; a comment is an admission that it isn't.
-Don't add comments unless it matches one of the following rules, everything else goes:
+Don't add comments unless it matches one of the following rules, everything else goes.
+These rules override the surrounding file's conventions. Existing comments that violate
+them are debt, not precedent — don't imitate them:
 
 1. **Machine-readable directives.** `//nolint`, `# type: ignore`, `# noqa`,
    `# shellcheck disable=SCxxxx`, `#pragma warning disable`, `// eslint-disable`,
@@ -31,12 +33,14 @@ Don't add comments unless it matches one of the following rules, everything else
    code is now permanent, delete the marker.
 3. **Public API documentation** Documentation on symbols exposed for callers
    elsewhere stay (nuget, npm, etc). Callers who can't read the code need
-   documentation. Documentation on symbols not exposed elsewhere stay *only*
-   if the documentation adds something the signature doesn't already state:
-   details about how the function works, thrown exceptions, specifics on return
-   values, etc. Documentation that only restates the signature should be deleted.
-   This means dynamically typed languages need more documentation than statically
-   typed ones.
+   documentation. This only covers doc comments attached to a symbol (JSDoc, 
+   C# doc comment with `///`, bash function usage, etc). Comments in the middle
+   of a function explaining non-obvious "why" do not survive. Documentation on
+   symbols not exposed elsewhere stay *only* if the documentation adds something
+   the signature doesn't already state: details about how the function works,
+   thrown exceptions, specifics on return values, etc. Documentation that only
+   restates the signature should be deleted. This means dynamically typed languages
+   need more documentation than statically typed ones.
 5. **Existing links.** A URL, an issue number, the source a snippet was adapted from,
    the page a magic constant came from. A link is not a copy: it does not drift,
    and it is often the only route back to why a value is what it is.
