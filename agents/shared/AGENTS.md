@@ -20,9 +20,11 @@ to decompile assemblies. Instead just ask and I will tell you where to look.
 ## Limit code comments
 
 Code should be self-documenting; a comment is an admission that it isn't.
-Don't add comments unless it matches one of the following rules, everything else goes.
-These rules override the surrounding file's conventions. Existing comments that violate
-them are debt, not precedent — don't imitate them:
+Don't add comments unless it matches one of the following rules, EVERYTHING ELSE GOES!
+These rules override the surrounding file's conventions. Existing comments that
+violate them are debt, not precedent — don't imitate them. Don't explain or defend a
+decision in a comment. That goes in your response to me, not the file. Validate
+newly written comments match these rules before reporting completions of a task.
 
 1. **Machine-readable directives.** `//nolint`, `# type: ignore`, `# noqa`,
    `# shellcheck disable=SCxxxx`, `#pragma warning disable`, `// eslint-disable`,
@@ -41,13 +43,13 @@ them are debt, not precedent — don't imitate them:
    thrown exceptions, specifics on return values, etc. Documentation that only
    restates the signature should be deleted. This means dynamically typed languages
    need more documentation than statically typed ones.
-5. **Existing links.** A URL, an issue number, the source a snippet was adapted from,
+4. **Existing links.** A URL, an issue number, the source a snippet was adapted from,
    the page a magic constant came from. A link is not a copy: it does not drift,
    and it is often the only route back to why a value is what it is.
-6. **Section separators.** A banner or a one-line label marking where one part
+5. **Section separators.** A banner or a one-line label marking where one part
    of a file ends and the next begins, in a file long enough to navigate rather
    than read. It orients; it does not explain.
-7. **Commented-out code** If it's there, it's there for a reason. An alternative
+6. **Commented-out code** If it's there, it's there for a reason. An alternative
    theme, a disabled option, a config line kept beside its live sibling, and code
    the developer might need to add back later.
 

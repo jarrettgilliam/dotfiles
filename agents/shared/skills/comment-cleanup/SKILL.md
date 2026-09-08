@@ -19,7 +19,7 @@ them are debt, not precedent — don't imitate them
 
 ## Survivors
 
-Everything else goes.
+EVERYTHING ELSE GOES!
 
 1. **Machine-readable directives.** `//nolint`, `# type: ignore`, `# noqa`,
    `# shellcheck disable=SCxxxx`, `#pragma warning disable`, `// eslint-disable`,
@@ -38,13 +38,13 @@ Everything else goes.
    thrown exceptions, specifics on return values, etc. Documentation that only
    restates the signature should be deleted. This means dynamically typed languages
    need more documentation than statically typed ones.
-5. **Existing links.** A URL, an issue number, the source a snippet was adapted from,
+4. **Existing links.** A URL, an issue number, the source a snippet was adapted from,
    the page a magic constant came from. A link is not a copy: it does not drift,
    and it is often the only route back to why a value is what it is.
-6. **Section separators.** A banner or a one-line label marking where one part
+5. **Section separators.** A banner or a one-line label marking where one part
    of a file ends and the next begins, in a file long enough to navigate rather
    than read. It orients; it does not explain.
-7. **Commented-out code** If it's there, it's there for a reason. An alternative
+6. **Commented-out code** If it's there, it's there for a reason. An alternative
    theme, a disabled option, a config line kept beside its live sibling, and code
    the developer might need to add back later.
 
