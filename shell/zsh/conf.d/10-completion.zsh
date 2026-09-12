@@ -20,12 +20,20 @@ fi
 autoload -Uz compinit
 _zcompdump=$ZSH_CACHE_DIR/zcompdump
 _zcompdump_stale=($_zcompdump(Nmh+24))
+
+# Windows drive mounts report every file as 0777, so compaudit flags the whole
+# repo and prompts on every shell. -u trusts fpath; -i would instead silently
+# drop $ZDOTDIR/functions
+if [[ $ZDOTDIR == /mnt/* ]]; then
+    _compinit_insecure=-u
+fi
+
 if (( $#_zcompdump_stale )) || [[ ! -s $_zcompdump ]]; then
-    compinit -d $_zcompdump
+    compinit $_compinit_insecure -d $_zcompdump
 else
     compinit -C -d $_zcompdump
 fi
-unset _zcompdump _zcompdump_stale
+unset _zcompdump _zcompdump_stale _compinit_insecure
 
 setopt auto_menu
 setopt always_to_end
