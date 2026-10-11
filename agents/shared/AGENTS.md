@@ -52,7 +52,3 @@ newly written comments match these rules before reporting completions of a task.
 6. **Commented-out code** If it's there, it's there for a reason. An alternative
    theme, a disabled option, a config line kept beside its live sibling, and code
    the developer might need to add back later.
-
-## graphify - **graphify** (`~/.claude/skills/graphify/SKILL.md`) - any input to
-knowledge graph. Trigger: `/graphify` When the user types `/graphify`, use the
-installed graphify skill or instructions before doing anything else.
